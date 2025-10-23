@@ -4,7 +4,7 @@ using ScriptableObjects;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Burst.Intrinsics;
+using Systems;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -19,99 +19,105 @@ namespace Core
         [SerializeField] private bool _debug = true;
         [SerializeField] Gem gemPrefab;
         [SerializeField] GemSO[] gemTypes;
-    //    [SerializeField] GameObject explosion;
-
+    //  [SerializeField] GameObject explosion;
+        [Header("Systems")]
+        private GridSystem<GridObject<IGem>> _gridSystem;
         [SerializeField] private InputReader _inputReader;
+        private GemFactory _gemFactory;
 
-        GridSystem<GridObject<Gem>> _gridSystem;
-
-        Vector2Int selectedGem = Vector2Int.one * -1;
-        private void Start()
+        private void OnEnable()
         {
-            InitializeGrid();
-            _inputReader.Fire += OnSelectGem;
+            _inputReader.OnSwipe += OnSwipe;
         }
 
         private void OnDestroy()
         {
-            _inputReader.Fire -= OnSelectGem;
+            _inputReader.OnSwipe -= OnSwipe;
         }
+
+        private void Start()
+        {
+            _gemFactory = new(transform);
+
+            InitializeGrid();
+        }
+
+        private void OnSwipe(Vector2 screenStart, Vector2Int direction)
+        {
+            Vector3 worldPos = Camera.main.ScreenToWorldPoint(screenStart);
+            worldPos.z = 0;
+            Vector2Int gridPosA = _gridSystem.GetXY(worldPos);
+            if (!IsValidPosition(gridPosA) || IsEmptyPosition(gridPosA))
+                return;
+            Vector2Int gridPosB = gridPosA + direction;
+            if (!IsValidPosition(gridPosB) || IsEmptyPosition(gridPosB))
+                return;
+            StartCoroutine(RunGameLoop(gridPosA, gridPosB));
+        }
+       
         void InitializeGrid()
         {
-            _gridSystem = GridSystem<GridObject<Gem>>.VerticalGrid(_width, _height, _cellSize, _originPosition, _debug);
-
+            _gridSystem = GridSystem<GridObject<IGem>>.VerticalGrid(_width, _height, _cellSize, _originPosition, _debug);
             for (var x = 0; x < _width; x++)
             {
                 for (var y = 0; y < _height; y++)
                 {
-                    CreateGem(x, y);
+                    CreateGem(x, y, _gridSystem.GetWorldPositionCenter(x, y));
                 }
             }
         }
 
-        void CreateGem(int x, int y)
+        private IGem CreateGem(int x, int y, Vector3 spawnPosition, bool animate = false) //Ver si no devuelve nada luego
         {
-            var gem = Instantiate(gemPrefab, _gridSystem.GetWorldPositionCenter(x, y), Quaternion.identity, transform);
-            gem.SetGem(gemTypes[Random.Range(0, gemTypes.Length)]);
-            var gridObject = new GridObject<Gem>(_gridSystem, x, y);
+            var gemSO = gemTypes[Random.Range(0, gemTypes.Length)];
+            var gem = _gemFactory.Create(gemSO, spawnPosition, Quaternion.identity);
+            gem.Init(gemSO);
+
+            var gridObject = new GridObject<IGem>(_gridSystem, x, y);
             gridObject.SetValue(gem);
             _gridSystem.SetValue(x, y, gridObject);
-        }
-        private void OnSelectGem()
-        {
-            var gridPos = _gridSystem.GetXY(Camera.main.ScreenToWorldPoint(_inputReader.Selected));
 
-            if (!IsValidPosition(gridPos) || IsEmptyPosition(gridPos)) return;
+            if (animate)
+            {
+                var target = _gridSystem.GetWorldPositionCenter(x, y);
+                Tween.LocalPosition(gem.Transform, target, 0.3f, Ease.OutBounce);
+            }
 
-            if (selectedGem == gridPos)
-            {
-                DeselectGem();
-                //audioManager.PlayDeselect();
-            }
-            else if (selectedGem == Vector2Int.one * -1)
-            {
-                SelectGem(gridPos);
-               // audioManager.PlayClick();
-            }
-            else
-            {
-                StartCoroutine(RunGameLoop(selectedGem, gridPos));
-            }
+            return gem;
         }
+
 
         private IEnumerator RunGameLoop(Vector2Int gridPosA, Vector2Int gridPosB)
         {
+            _inputReader.InputEnabled = false;
             yield return StartCoroutine(SwapGems(gridPosA, gridPosB));
-
+            List<Vector2Int> matches = FindMatches();
             // TODO: Calculate score
-            while (true)
+            if (matches.Count == 0)
             {
-                List<Vector2Int> matches = FindMatches();
+                yield return StartCoroutine(SwapGems(gridPosA, gridPosB));
+                _inputReader.InputEnabled = true;
+                yield break;
+            }
 
-                if (matches.Count == 0)
-                {
-                    //if (isPlayerSwap)
-                    //    yield return StartCoroutine(Swap(gridPosB, gridPosA));
-                    break;
-                }
-
-               // combo++; 
+            // Si hubo match, seguimos con el ciclo
+            while (matches.Count > 0)
+            {
                 yield return StartCoroutine(ExplodeGems(matches));
                 yield return StartCoroutine(MakeGemsFall());
                 yield return StartCoroutine(FillEmptySpots());
-               // isPlayerSwap = false;
-            }
-           // _canSwipe = true;
-            // TODO: Check if game is over
 
-            DeselectGem();
+                matches = FindMatches();
+            }
+            _inputReader.InputEnabled = true;
+            // TODO: Check if game is over
         }
         private IEnumerator SwapGems(Vector2Int gridPosA, Vector2Int gridPosB)
         {
-            var gridObjectA = _gridSystem.GetValue(gridPosA.x, gridPosA.y);
+            var gridObjectA = _gridSystem.GetValue(gridPosA.x, gridPosA.y); // Ver si hacer lo de velocidad aumaneta si no hay match y volvemos a su pocion original
             var gridObjectB = _gridSystem.GetValue(gridPosB.x, gridPosB.y);
-            Tween.LocalPosition(gridObjectA.GetValue().transform, _gridSystem.GetWorldPositionCenter(gridPosB.x, gridPosB.y), 0.5f, Ease.InQuad);
-            Tween.LocalPosition(gridObjectB.GetValue().transform, _gridSystem.GetWorldPositionCenter(gridPosA.x, gridPosA.y), 0.5f, Ease.InQuad);
+            Tween.LocalPosition(gridObjectA.GetValue().Transform, _gridSystem.GetWorldPositionCenter(gridPosB.x, gridPosB.y), 0.5f, Ease.InQuad); //Moverlo a clase gem
+            Tween.LocalPosition(gridObjectB.GetValue().Transform, _gridSystem.GetWorldPositionCenter(gridPosA.x, gridPosA.y), 0.5f, Ease.InQuad);
 
             _gridSystem.SetValue(gridPosA.x, gridPosA.y, gridObjectB);
             _gridSystem.SetValue(gridPosB.x, gridPosB.y, gridObjectA);
@@ -174,38 +180,38 @@ namespace Core
 
             return new List<Vector2Int>(matches);
         }
-        private IEnumerator FillEmptySpots()
+        private IEnumerator ExplodeGems(List<Vector2Int> matches)
         {
-            float maxDuration = 0.3f;
+            if (matches == null || matches.Count == 0)
+                yield break;
 
-            for (var x = 0; x < _width; x++)
+            float maxDuration = 0.25f; // Duración máxima del tween
+
+            foreach (var match in matches)
             {
-                for (var y = 0; y < _height; y++)
-                {
-                    if (_gridSystem.GetValue(x, y) == null)
-                    {
-                        //CreateGem(x, y);
-                        var gem = Instantiate(
-                            gemPrefab,
-                            _gridSystem.GetWorldPositionCenter(x, _height + 1),
-                            Quaternion.identity,
-                            transform);
+                var gridObj = _gridSystem.GetValue(match.x, match.y);
+                if (gridObj == null) continue;
 
-                        gem.SetGem(gemTypes[Random.Range(0, gemTypes.Length)]);
+                var gem = gridObj.GetValue();
+                _gridSystem.SetValue(match.x, match.y, null);
+                // ExplodeVFX()
+                Tween.PunchScale(gem.Transform, Vector3.one * 0.2f, 0.15f, frequency: 2);
+                Tween.Scale(gem.Transform, Vector3.zero, 0.2f, Ease.InBack);
 
-                        var gridObject = new GridObject<Gem>(_gridSystem, x, y);
-                        gridObject.SetValue(gem);
-                        _gridSystem.SetValue(x, y, gridObject);
-                        //audioManager.PlayPop();
-                        var target = _gridSystem.GetWorldPositionCenter(x, y);
-                        Tween.LocalPosition(gem.transform, target, maxDuration, Ease.OutBounce);
-                    }
-                }
+                Destroy((gem as Gem).gameObject, maxDuration); //Ponerlo en la clase gem
             }
 
+            // Esperar la duración más larga de las animaciones
             yield return Tween.Delay(maxDuration).ToYieldInstruction();
-        }
 
+        }
+        //void ExplodeVFX(Vector2Int match)
+        //{
+        //    // TODO: Pool
+        //    var fx = Instantiate(explosion, transform);
+        //    fx.transform.position = _gridSystem.GetWorldPositionCenter(match.x, match.y);
+        //    Destroy(fx, 5f);
+        //}
         private IEnumerator MakeGemsFall()
         {
             float maxDuration = 0.25f; 
@@ -229,7 +235,7 @@ namespace Core
                         _gridSystem.SetValue(x, y, null);
 
                         var targetPos = _gridSystem.GetWorldPositionCenter(x, emptyY);
-                        Tween.LocalPosition(gem.transform, targetPos, maxDuration, Ease.InQuad);
+                        Tween.LocalPosition(gem.Transform, targetPos, maxDuration, Ease.InQuad);
 
                         emptyY++;
                     }
@@ -239,52 +245,25 @@ namespace Core
             if (moved)
                 yield return Tween.Delay(maxDuration).ToYieldInstruction();
         }
-
-
-        private IEnumerator ExplodeGems(List<Vector2Int> matches)
+        private IEnumerator FillEmptySpots()
         {
-            if (matches == null || matches.Count == 0)
-                yield break;
+            float maxDuration = 0.3f;
 
-            float maxDuration = 0.25f; // Duración máxima del tween
-
-            foreach (var match in matches)
+            for (var x = 0; x < _width; x++)
             {
-                var gridObj = _gridSystem.GetValue(match.x, match.y);
-                if (gridObj == null) continue;
-
-                var gem = gridObj.GetValue();
-                _gridSystem.SetValue(match.x, match.y, null);
-                // ExplodeVFX()
-                Tween.PunchScale(gem.transform, Vector3.one * 0.2f, 0.15f, frequency: 2);
-                Tween.Scale(gem.transform, Vector3.zero, 0.2f, Ease.InBack);
-
-                Destroy(gem.gameObject, maxDuration);
+                for (var y = 0; y < _height; y++)
+                {
+                    if (_gridSystem.GetValue(x, y) == null)
+                    {
+                        CreateGem(x, y, _gridSystem.GetWorldPositionCenter(x, _height + 1), true);
+                        //audioManager.PlayPop();
+                    }
+                }
             }
 
-            // Esperar la duración más larga de las animaciones
             yield return Tween.Delay(maxDuration).ToYieldInstruction();
-            
         }
-
-
-        //void ExplodeVFX(Vector2Int match)
-        //{
-        //    // TODO: Pool
-        //    var fx = Instantiate(explosion, transform);
-        //    fx.transform.position = _gridSystem.GetWorldPositionCenter(match.x, match.y);
-        //    Destroy(fx, 5f);
-        //}
-
-
-
-
-
-        private void DeselectGem() => selectedGem = new Vector2Int(-1, -1);
-        private void SelectGem(Vector2Int gridPos) => selectedGem = gridPos;
-
         private bool IsEmptyPosition(Vector2Int gridPosition) => _gridSystem.GetValue(gridPosition.x, gridPosition.y) == null;
-
         private bool IsValidPosition(Vector2 gridPosition) => gridPosition.x >= 0 && gridPosition.x < _width && gridPosition.y >= 0 && gridPosition.y < _height;
     }
 

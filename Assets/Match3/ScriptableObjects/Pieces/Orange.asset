@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: Orange
   m_EditorClassIdentifier: 
   <Icon>k__BackingField: {fileID: 21300000, guid: 5b0c287fddf11b24d910a6b285ee1807, type: 3}
+  <Prefab>k__BackingField: {fileID: 5950124371606153668, guid: a77454be7f29e9342b9fcc8951da3851, type: 3}

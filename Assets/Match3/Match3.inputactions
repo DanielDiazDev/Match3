@@ -34,10 +34,19 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Select",
-                    "type": "Value",
-                    "id": "7149b142-3618-4618-9282-9cffd62fd621",
+                    "name": "PrimaryContact",
+                    "type": "Button",
+                    "id": "4256be89-81cb-4c48-bbcb-1da75763e6a0",
                     "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "PrimaryPosition",
+                    "type": "Value",
+                    "id": "fcd02564-2e93-4966-a20d-2d105a122293",
+                    "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -266,12 +275,23 @@
                 },
                 {
                     "name": "",
-                    "id": "e0aeb11f-de23-46aa-a2dd-b80fe9e95db5",
+                    "id": "ade3083d-4234-42f1-b5a1-f448411bfa71",
+                    "path": "<Pointer>/press",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PrimaryContact",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "807ec76e-c9f0-4f60-8aab-7e13c2ba0427",
                     "path": "<Pointer>/position",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Select",
+                    "action": "PrimaryPosition",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
