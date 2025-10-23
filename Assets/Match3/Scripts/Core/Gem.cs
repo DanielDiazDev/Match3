@@ -23,5 +23,5 @@ namespace Core
 
         public GemSO GetGem() => GemSO;
     }
-
+    
 }

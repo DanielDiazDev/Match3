@@ -15,7 +15,7 @@ namespace Systems
         }
         public IGem Create(GemSO gemSO, Vector2 position, Quaternion rotation)
         {
-            return Object.Instantiate(gemSO.Prefab, position, rotation).GetComponent<IGem>();
+            return UnityEngine.Object.Instantiate(gemSO.Prefab, position, rotation).GetComponent<IGem>();
         }
         
     }
