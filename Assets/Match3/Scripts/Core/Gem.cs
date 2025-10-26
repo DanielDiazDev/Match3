@@ -15,6 +15,7 @@ namespace Core
 
         public Transform Transform => transform;
 
+
         public void Init(GemSO gemSO)
         {
             GemSO = gemSO;

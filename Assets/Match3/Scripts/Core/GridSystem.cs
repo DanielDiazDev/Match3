@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -75,6 +76,39 @@ namespace Core
         public Vector2Int GetXY(Vector3 worldPosition) => _coordinateConverter.WorldToGrid(worldPosition, _cellSize, _origin);
 
         public Vector3 GetWorldPositionCenter(int x, int y) => _coordinateConverter.GridToWorldCenter(x, y, _cellSize, _origin);
+        public enum Direction
+        {
+            Up,
+            Down,
+            Left,
+            Right
+        }
+
+        public List<T> GetLineValues(int x, int y, Direction direction)
+        {
+            var result = new List<T>();
+            switch (direction)
+            {
+                case Direction.Up:
+                    for (int i = y + 1; i < _height; i++)
+                        result.Add(_gridArray[x, i]);
+                    break;
+                case Direction.Down:
+                    for (int i = y - 1; i >= 0; i--)
+                        result.Add(_gridArray[x, i]);
+                    break;
+                case Direction.Left:
+                    for (int i = x - 1; i >= 0; i--)
+                        result.Add(_gridArray[i, y]);
+                    break;
+                case Direction.Right:
+                    for (int i = x + 1; i < _width; i++)
+                        result.Add(_gridArray[i, y]);
+                    break;
+            }
+            return result;
+        }
+
 
         Vector3 GetWorldPosition(int x, int y) => _coordinateConverter.GridToWorld(x, y, _cellSize, _origin);
 

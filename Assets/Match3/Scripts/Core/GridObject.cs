@@ -3,8 +3,8 @@ namespace Core
     public class GridObject<T>
     {
         private GridSystem<GridObject<T>> _gridSystem;
-        private int x;
-        private int y;
+        public int x { get; private set; }
+        public int y { get; private set; }
         private T _gem;
 
         public GridObject(GridSystem<GridObject<T>> grid, int x, int y)

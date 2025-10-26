@@ -16,15 +16,16 @@ namespace Core
         [SerializeField] private Vector3 _originPosition = Vector3.zero;
         [SerializeField] private bool _debug = true;
         [SerializeField] GemSO[] gemTypes;
+        [SerializeField] private ExplodeSystem _explodeSystem;
     //  [SerializeField] GameObject explosion;
         [Header("Systems")]
         private GridSystem<GridObject<IGem>> _gridSystem;
         [SerializeField] private InputReader _inputReader;
+        [SerializeField] private PowerUpSystem _powerUpSystem;
         private GemFactory _gemFactory;
         private GemSpawner _gemSpawner;
         private SwapHandler _swapHandler;
         private MatchFinder _matchFinder;
-        private ExplodeSystem _explodeSystem;
         private GravityManager _gravityManager;
         private GemFiller _gemFiller;
         private void OnEnable()
@@ -56,14 +57,15 @@ namespace Core
                 return;
             RunGameLoop(gridPosA, gridPosB).Forget();
         }
-       
+
         void InitializeGrid()
         {
             _gridSystem = GridSystem<GridObject<IGem>>.VerticalGrid(_width, _height, _cellSize, _originPosition, _debug);
             _gemSpawner = new(_gemFactory, _gridSystem);
             _swapHandler = new(_gridSystem);
             _matchFinder = new(_height, _width, _gridSystem);
-            _explodeSystem = new(_gridSystem);
+            _explodeSystem.Init(_gridSystem);
+            _powerUpSystem.Init(_gridSystem, _explodeSystem);
             _gravityManager = new(_gridSystem, _width, _height);
             _gemFiller = new(_gridSystem, _width, _height, _gemSpawner);
             for (var x = 0; x < _width; x++)
@@ -78,16 +80,29 @@ namespace Core
         {
             _inputReader.InputEnabled = false;
             await _swapHandler.SwapGems(gridPosA, gridPosB);
-            List<Vector2Int> matches = _matchFinder.FindMatches();
+            var gemA = _gridSystem.GetValue(gridPosA.x, gridPosA.y).GetValue();
+            var gemB = _gridSystem.GetValue(gridPosB.x, gridPosB.y).GetValue();
+            bool powerUpActivated = false;
+            if (gemA.GetGem().IsPowerUp || gemB.GetGem().IsPowerUp)
+            {
+                var powerGem = gemA.GetGem().IsPowerUp ? gemA : gemB;
+                await _powerUpSystem.ActivatePowerUp(powerGem, gridPosA, gridPosB, _width, _height);
+                powerUpActivated = true;
+            }
+            if (powerUpActivated)
+            {
+                await _gravityManager.MakeGemsFall();
+                await _gemFiller.FillEmptySpots(gemTypes);
+            }
+            var matches = _matchFinder.FindMatches();
             // TODO: Calculate score
             if (matches.Count == 0)
             {
                 await _swapHandler.SwapGems(gridPosA, gridPosB);
+                
                 _inputReader.InputEnabled = true;
                 return;
             }
-
-            // Si hubo match, seguimos con el ciclo
             while (matches.Count > 0)
             {
                 await _explodeSystem.ExplodeGems(matches);
@@ -100,7 +115,7 @@ namespace Core
             // TODO: Check if game is over
         }
         private bool IsEmptyPosition(Vector2Int gridPosition) => _gridSystem.GetValue(gridPosition.x, gridPosition.y) == null;
-        private bool IsValidPosition(Vector2 gridPosition) => gridPosition.x >= 0 && gridPosition.x < _width && gridPosition.y >= 0 && gridPosition.y < _height;
+        private bool IsValidPosition(Vector2Int gridPosition) => gridPosition.x >= 0 && gridPosition.x < _width && gridPosition.y >= 0 && gridPosition.y < _height;
     }
 
 }
