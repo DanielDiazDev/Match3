@@ -58,8 +58,8 @@ namespace Systems
 
                     _gridSystem.SetValue(pos.x, pos.y, null);
 
-                    Tween.PunchScale(gem.Transform, Vector3.one * 0.2f, 0.15f, frequency: 2);
-                    Tween.Scale(gem.Transform, Vector3.zero, 0.2f, Ease.InBack);
+                    _= Tween.PunchScale(gem.Transform, Vector3.one * 0.2f, 0.15f, frequency: 2);
+                    _ = Tween.Scale(gem.Transform, Vector3.zero, 0.2f, Ease.InBack);
                     GameObject.Destroy((gem as Gem).gameObject, maxDuration);
                 }
             }
@@ -82,8 +82,8 @@ namespace Systems
                     var gem = gridObj.GetValue();
                     _gridSystem.SetValue(pos.x, pos.y, null);
 
-                    Tween.PunchScale(gem.Transform, Vector3.one * 0.2f, 0.15f, frequency: 2);
-                    Tween.Scale(gem.Transform, Vector3.zero, 0.2f, Ease.InBack);
+                    _ = Tween.PunchScale(gem.Transform, Vector3.one * 0.2f, 0.15f, frequency: 2);
+                    _ = Tween.Scale(gem.Transform, Vector3.zero, 0.2f, Ease.InBack);
                     GameObject.Destroy((gem as Gem).gameObject, maxDuration);
                 }
             }
@@ -109,8 +109,8 @@ namespace Systems
                 var gem = gridObj.GetValue();
                 _gridSystem.SetValue(x, y, null);
 
-                Tween.PunchScale(gem.Transform, Vector3.one * 0.2f, 0.15f, frequency: 2);
-                Tween.Scale(gem.Transform, Vector3.zero, 0.2f, Ease.InBack);
+                _ = Tween.PunchScale(gem.Transform, Vector3.one * 0.2f, 0.15f, frequency: 2);
+                _ = Tween.Scale(gem.Transform, Vector3.zero, 0.2f, Ease.InBack);
                 GameObject.Destroy((gem as Gem).gameObject, maxDuration);
             }
 
@@ -134,8 +134,8 @@ namespace Systems
 
                     _gridSystem.SetValue(x, y, null);
 
-                    Tween.PunchScale(gem.Transform, Vector3.one * 0.2f, 0.15f, frequency: 2);
-                    Tween.Scale(gem.Transform, Vector3.zero, 0.2f, Ease.InBack);
+                    _ = Tween.PunchScale(gem.Transform, Vector3.one * 0.2f, 0.15f, frequency: 2);
+                    _ = Tween.Scale(gem.Transform, Vector3.zero, 0.2f, Ease.InBack);
                     GameObject.Destroy((gem as Gem).gameObject, maxDuration);
                 }
             }

@@ -21,8 +21,8 @@ namespace Systems
         {
             var gridObjectA = _gridSystem.GetValue(gridPosA.x, gridPosA.y); // Ver si hacer lo de velocidad aumaneta si no hay match y volvemos a su pocion original
             var gridObjectB = _gridSystem.GetValue(gridPosB.x, gridPosB.y);
-            Tween.LocalPosition(gridObjectA.GetValue().Transform, _gridSystem.GetWorldPositionCenter(gridPosB.x, gridPosB.y), 0.5f, Ease.InQuad); //Moverlo a clase gem
-            Tween.LocalPosition(gridObjectB.GetValue().Transform, _gridSystem.GetWorldPositionCenter(gridPosA.x, gridPosA.y), 0.5f, Ease.InQuad);
+            _= Tween.LocalPosition(gridObjectA.GetValue().Transform, _gridSystem.GetWorldPositionCenter(gridPosB.x, gridPosB.y), 0.5f, Ease.InQuad); //Moverlo a clase gem
+            _ = Tween.LocalPosition(gridObjectB.GetValue().Transform, _gridSystem.GetWorldPositionCenter(gridPosA.x, gridPosA.y), 0.5f, Ease.InQuad);
 
             _gridSystem.SetValue(gridPosA.x, gridPosA.y, gridObjectB);
             _gridSystem.SetValue(gridPosB.x, gridPosB.y, gridObjectA);

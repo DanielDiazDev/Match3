@@ -1,7 +1,6 @@
 ﻿using Core;
 using Cysharp.Threading.Tasks;
 using ScriptableObjects;
-using System;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -25,29 +24,17 @@ namespace Systems
         public bool HaveEnoughtToGeneratePowerUp(int count) => count > 3;
         public GemSO GetPowerUpSO(MatchPattern pattern)
         {
-            switch (pattern)
+            return pattern switch
             {
-                case MatchPattern.LShape:
-                case MatchPattern.TShape:
-                case MatchPattern.Square:
-                    return _bombSO;
-
-                case MatchPattern.LineVertical:
-                    return _lineVerticalSO;
-
-                case MatchPattern.LineHorizontal:
-                    return _lineHorizontalSO;
-
-                case MatchPattern.FiveInLine:
-                    return _gemClearSO;
-
-                default:
-                    return null;
-            }
+                MatchPattern.LShape or MatchPattern.TShape or MatchPattern.Square => _bombSO,
+                MatchPattern.LineVertical => _lineVerticalSO,
+                MatchPattern.LineHorizontal => _lineHorizontalSO,
+                MatchPattern.FiveInLine => _gemClearSO,
+                _ => null,
+            };
         }
         public void GeneratePowerUp(Gem oldGem, MatchData match, GemSO powerUpSO)
         {
-            // Crear nuevo power-up en esa posición
             var pos = _gridSystem.GetWorldPositionCenter(match.Origin.x, match.Origin.y);
             var powerUp = Instantiate(oldGem, pos, Quaternion.identity, transform);
             powerUp.Init(powerUpSO);
@@ -60,7 +47,7 @@ namespace Systems
         {
             if (powerGem == null || powerGem.GetGem() == null) return;
 
-            GemSO gemSO = powerGem.GetGem();
+            var gemSO = powerGem.GetGem();
 
             if (gemSO is BombSO)
             {

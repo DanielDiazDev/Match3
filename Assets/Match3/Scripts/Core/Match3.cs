@@ -1,7 +1,9 @@
 using Cysharp.Threading.Tasks;
 using Input;
 using ScriptableObjects;
+using ScriptableObjects.Level;
 using System.Collections.Generic;
+using System.Linq;
 using Systems;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -10,12 +12,12 @@ namespace Core
 {
     public class Match3 : MonoBehaviour
     {
-        [SerializeField] private int _width = 8;
-        [SerializeField] private int _height = 8;
+       // [SerializeField] private int _width = 8;
+       // [SerializeField] private int _height = 8;
         [SerializeField] private float _cellSize = 1f;
         [SerializeField] private Vector3 _originPosition = Vector3.zero;
         [SerializeField] private bool _debug = true;
-        [SerializeField] GemSO[] gemTypes;
+        [SerializeField] GemSO[] _gems;
         [SerializeField] private ExplodeSystem _explodeSystem;
     //  [SerializeField] GameObject explosion;
         [Header("Systems")]
@@ -28,6 +30,7 @@ namespace Core
         private MatchFinder _matchFinder;
         private GravityManager _gravityManager;
         private GemFiller _gemFiller;
+        private LevelSO _levelSO;
         private void OnEnable()
         {
             _inputReader.OnSwipe += OnSwipe;
@@ -38,8 +41,9 @@ namespace Core
             _inputReader.OnSwipe -= OnSwipe;
         }
 
-        private void Start()
+        public void Init(LevelSO levelSO)
         {
+            _levelSO = levelSO;
             _gemFactory = new(transform);
 
             InitializeGrid();
@@ -60,19 +64,29 @@ namespace Core
 
         void InitializeGrid()
         {
-            _gridSystem = GridSystem<GridObject<IGem>>.VerticalGrid(_width, _height, _cellSize, _originPosition, _debug);
+            _gridSystem = GridSystem<GridObject<IGem>>.VerticalGrid(_levelSO.width, _levelSO.height, _cellSize, _originPosition, _debug);
             _gemSpawner = new(_gemFactory, _gridSystem);
             _swapHandler = new(_gridSystem);
-            _matchFinder = new(_height, _width, _gridSystem);
+            _matchFinder = new(_levelSO.height, _levelSO.width, _gridSystem);
             _explodeSystem.Init(_gridSystem);
             _powerUpSystem.Init(_gridSystem, _explodeSystem);
-            _gravityManager = new(_gridSystem, _width, _height);
-            _gemFiller = new(_gridSystem, _width, _height, _gemSpawner);
-            for (var x = 0; x < _width; x++)
+            _gravityManager = new(_gridSystem, _levelSO.width, _levelSO.height);
+            _gemFiller = new(_gridSystem, _levelSO.width, _levelSO.height, _gemSpawner);
+            for (var x = 0; x < _levelSO.width; x++)
             {
-                for (var y = 0; y < _height; y++)
+                for (var y = 0; y < _levelSO.height; y++)
                 {
-                    _gemSpawner.CreateGem(gemTypes[Random.Range(0, gemTypes.Length)],x, y, _gridSystem.GetWorldPositionCenter(x, y));
+                    var position = new Vector2Int(x, y);
+
+                    if (_levelSO.initialGems.TryGetValue(position, out var gemSO))
+                    {
+                        var worldPos = _gridSystem.GetWorldPositionCenter(x, y);
+                        _gemSpawner.CreateGem(gemSO, x, y, worldPos);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"No gem type defined for position {position}");
+                    }
                 }
             }
         }
@@ -86,13 +100,13 @@ namespace Core
             if (gemA.GetGem().IsPowerUp || gemB.GetGem().IsPowerUp)
             {
                 var powerGem = gemA.GetGem().IsPowerUp ? gemA : gemB;
-                await _powerUpSystem.ActivatePowerUp(powerGem, gridPosA, gridPosB, _width, _height);
+                await _powerUpSystem.ActivatePowerUp(powerGem, gridPosA, gridPosB, _levelSO.width, _levelSO.height);
                 powerUpActivated = true;
             }
             if (powerUpActivated)
             {
                 await _gravityManager.MakeGemsFall();
-                await _gemFiller.FillEmptySpots(gemTypes);
+                await _gemFiller.FillEmptySpots(_gems);
             }
             var matches = _matchFinder.FindMatches();
             // TODO: Calculate score
@@ -107,7 +121,7 @@ namespace Core
             {
                 await _explodeSystem.ExplodeGems(matches);
                 await _gravityManager.MakeGemsFall();
-                await _gemFiller.FillEmptySpots(gemTypes);
+                await _gemFiller.FillEmptySpots(_gems);
 
                 matches = _matchFinder.FindMatches();
             }
@@ -115,7 +129,7 @@ namespace Core
             // TODO: Check if game is over
         }
         private bool IsEmptyPosition(Vector2Int gridPosition) => _gridSystem.GetValue(gridPosition.x, gridPosition.y) == null;
-        private bool IsValidPosition(Vector2Int gridPosition) => gridPosition.x >= 0 && gridPosition.x < _width && gridPosition.y >= 0 && gridPosition.y < _height;
+        private bool IsValidPosition(Vector2Int gridPosition) => gridPosition.x >= 0 && gridPosition.x < _levelSO.width && gridPosition.y >= 0 && gridPosition.y < _levelSO.height;
     }
 
 }

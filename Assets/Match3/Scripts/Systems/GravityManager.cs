@@ -42,7 +42,7 @@ namespace Systems
                         _gridSystem.SetValue(x, y, null);
 
                         var targetPos = _gridSystem.GetWorldPositionCenter(x, emptyY);
-                        Tween.LocalPosition(gem.Transform, targetPos, maxDuration, Ease.InQuad);
+                        _ = Tween.LocalPosition(gem.Transform, targetPos, maxDuration, Ease.InQuad);
 
                         emptyY++;
                     }
