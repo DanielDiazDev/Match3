@@ -43,30 +43,34 @@ namespace Systems
             _gridSystem.SetValue(match.Origin.x, match.Origin.y, newGridObject);
         }
 
-        public async UniTask ActivatePowerUp(IGem powerGem, Vector2Int gridPosA, Vector2Int gridPosB, int width, int height)
+        public async UniTask<int> ActivatePowerUp(IGem powerGem, Vector2Int gridPosA, Vector2Int gridPosB, int width, int height)
         {
-            if (powerGem == null || powerGem.GetGem() == null) return;
+            if (powerGem == null || powerGem.GetGem() == null)
+                return 0;
 
             var gemSO = powerGem.GetGem();
+            int destroyedCount = 0;
 
             if (gemSO is BombSO)
             {
-                await _explodeSystem.ExplodeArea(gridPosA, 1); 
+                destroyedCount = await _explodeSystem.ExplodeArea(gridPosA, 1);
             }
             else if (gemSO is LineHorizontalSO)
             {
-                await _explodeSystem.ExplodeLine(gridPosA, true, width, height );
+                destroyedCount = await _explodeSystem.ExplodeLine(gridPosA, true, width, height);
             }
             else if (gemSO is LineVerticalSO)
             {
-                await _explodeSystem.ExplodeLine(gridPosA, false, width, height);
+                destroyedCount = await _explodeSystem.ExplodeLine(gridPosA, false, width, height);
             }
             else if (gemSO is GemClearSO)
             {
                 var otherGem = _gridSystem.GetValue(gridPosB.x, gridPosB.y)?.GetValue() as Gem;
                 if (otherGem != null)
-                    await _explodeSystem.ExplodeAllOfType(otherGem.GetGem(), width, height);
+                    destroyedCount = await _explodeSystem.ExplodeAllOfType(otherGem.GetGem(), width, height);
             }
+
+            return destroyedCount;
         }
     }
 }

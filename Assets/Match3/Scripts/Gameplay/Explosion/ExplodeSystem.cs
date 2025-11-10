@@ -4,9 +4,7 @@ using PrimeTween;
 using ScriptableObjects;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
-
 
 namespace Systems
 {
@@ -14,17 +12,19 @@ namespace Systems
     {
         private GridSystem<GridObject<IGem>> _gridSystem;
         [SerializeField] private PowerUpSystem _powerUpSystem;
+
         public void Init(GridSystem<GridObject<IGem>> gridSystem)
         {
             _gridSystem = gridSystem;
         }
 
-        public async UniTask ExplodeGems(List<MatchData> matches)
+        public async UniTask<int> ExplodeGems(List<MatchData> matches)
         {
             if (matches == null || matches.Count == 0)
-                return;
+                return 0;
 
             float maxDuration = 0.25f;
+            int destroyedCount = 0;
 
             foreach (var match in matches)
             {
@@ -34,6 +34,7 @@ namespace Systems
                     powerUpSO = _powerUpSystem.GetPowerUpSO(match.Pattern);
                 }
 
+                // Generar PowerUp si aplica
                 if (powerUpSO != null)
                 {
                     var oldGridObject = _gridSystem.GetValue(match.Origin.x, match.Origin.y);
@@ -41,10 +42,10 @@ namespace Systems
                     {
                         GameObject.Destroy(oldGem.gameObject, maxDuration);
                         _powerUpSystem.GeneratePowerUp(oldGem, match, powerUpSO);
-                       
                     }
                 }
 
+                // Destruir gemas del match
                 foreach (var pos in match.Positions)
                 {
                     if (powerUpSO != null && pos == match.Origin)
@@ -58,18 +59,22 @@ namespace Systems
 
                     _gridSystem.SetValue(pos.x, pos.y, null);
 
-                    _= Tween.PunchScale(gem.Transform, Vector3.one * 0.2f, 0.15f, frequency: 2);
+                    _ = Tween.PunchScale(gem.Transform, Vector3.one * 0.2f, 0.15f, frequency: 2);
                     _ = Tween.Scale(gem.Transform, Vector3.zero, 0.2f, Ease.InBack);
                     GameObject.Destroy((gem as Gem).gameObject, maxDuration);
+
+                    destroyedCount++;
                 }
             }
 
             await UniTask.Delay(TimeSpan.FromSeconds(maxDuration));
+            return destroyedCount;
         }
 
-        public async UniTask ExplodeArea(Vector2Int center, int radius)
+        public async UniTask<int> ExplodeArea(Vector2Int center, int radius)
         {
             float maxDuration = 0.25f;
+            int destroyedCount = 0;
 
             for (int dx = -radius; dx <= radius; dx++)
             {
@@ -85,16 +90,19 @@ namespace Systems
                     _ = Tween.PunchScale(gem.Transform, Vector3.one * 0.2f, 0.15f, frequency: 2);
                     _ = Tween.Scale(gem.Transform, Vector3.zero, 0.2f, Ease.InBack);
                     GameObject.Destroy((gem as Gem).gameObject, maxDuration);
+
+                    destroyedCount++;
                 }
             }
 
             await UniTask.Delay(TimeSpan.FromSeconds(maxDuration));
+            return destroyedCount;
         }
 
-
-        public async UniTask ExplodeLine(Vector2Int origin, bool horizontal, int width, int height)
+        public async UniTask<int> ExplodeLine(Vector2Int origin, bool horizontal, int width, int height)
         {
             float maxDuration = 0.25f;
+            int destroyedCount = 0;
 
             int length = horizontal ? width : height;
 
@@ -112,15 +120,18 @@ namespace Systems
                 _ = Tween.PunchScale(gem.Transform, Vector3.one * 0.2f, 0.15f, frequency: 2);
                 _ = Tween.Scale(gem.Transform, Vector3.zero, 0.2f, Ease.InBack);
                 GameObject.Destroy((gem as Gem).gameObject, maxDuration);
+
+                destroyedCount++;
             }
 
             await UniTask.Delay(TimeSpan.FromSeconds(maxDuration));
+            return destroyedCount;
         }
 
-
-        public async Task ExplodeAllOfType(GemSO gemSO, int width, int height)
+        public async UniTask<int> ExplodeAllOfType(GemSO gemSO, int width, int height)
         {
             float maxDuration = 0.25f;
+            int destroyedCount = 0;
 
             for (int x = 0; x < width; x++)
             {
@@ -137,11 +148,17 @@ namespace Systems
                     _ = Tween.PunchScale(gem.Transform, Vector3.one * 0.2f, 0.15f, frequency: 2);
                     _ = Tween.Scale(gem.Transform, Vector3.zero, 0.2f, Ease.InBack);
                     GameObject.Destroy((gem as Gem).gameObject, maxDuration);
+
+                    destroyedCount++;
                 }
             }
 
             await UniTask.Delay(TimeSpan.FromSeconds(maxDuration));
+            return destroyedCount;
         }
+    }
+}
+
 
 
 
@@ -154,5 +171,3 @@ namespace Systems
         //    fx.transform.position = _gridSystem.GetWorldPositionCenter(match.x, match.y);
         //    Destroy(fx, 5f);
         //}
-    }
-}

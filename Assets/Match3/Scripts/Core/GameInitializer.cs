@@ -10,6 +10,7 @@ namespace Systems
         private void Start()
         {
             var gameManager = ServiceLocator.Instance.Get<GameManager>();
+            if (gameManager == null) return;
             _match.Init(gameManager.CurrentLevelSO);
         }
     }

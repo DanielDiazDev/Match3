@@ -19,7 +19,7 @@ MonoBehaviour:
     _serializedList: []
   moveLimit: 0
   width: 1
-  height: 3
+  height: 4
   initialGems:
     _serializedList:
     - Key: {x: 0, y: 0}
@@ -27,6 +27,8 @@ MonoBehaviour:
     - Key: {x: 0, y: 1}
       Value: {fileID: 11400000, guid: 6f49dea41c1076c44b06a035a4b27945, type: 2}
     - Key: {x: 0, y: 2}
+      Value: {fileID: 11400000, guid: 6f49dea41c1076c44b06a035a4b27945, type: 2}
+    - Key: {x: 0, y: 3}
       Value: {fileID: 11400000, guid: 6f49dea41c1076c44b06a035a4b27945, type: 2}
   themeMusic: {fileID: 0}
   backgroundSprite: {fileID: 0}

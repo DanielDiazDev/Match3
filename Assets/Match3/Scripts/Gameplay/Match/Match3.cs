@@ -5,6 +5,7 @@ using ScriptableObjects.Level;
 using System.Collections.Generic;
 using System.Linq;
 using Systems;
+using Systems.Score;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -12,18 +13,15 @@ namespace Core
 {
     public class Match3 : MonoBehaviour
     {
-       // [SerializeField] private int _width = 8;
-       // [SerializeField] private int _height = 8;
         [SerializeField] private float _cellSize = 1f;
         [SerializeField] private Vector3 _originPosition = Vector3.zero;
         [SerializeField] private bool _debug = true;
         [SerializeField] GemSO[] _gems;
-        [SerializeField] private ExplodeSystem _explodeSystem;
-    //  [SerializeField] GameObject explosion;
         [Header("Systems")]
-        private GridSystem<GridObject<IGem>> _gridSystem;
         [SerializeField] private InputReader _inputReader;
         [SerializeField] private PowerUpSystem _powerUpSystem;
+        [SerializeField] private ExplodeSystem _explodeSystem;
+        private GridSystem<GridObject<IGem>> _gridSystem;
         private GemFactory _gemFactory;
         private GemSpawner _gemSpawner;
         private SwapHandler _swapHandler;
@@ -31,6 +29,9 @@ namespace Core
         private GravityManager _gravityManager;
         private GemFiller _gemFiller;
         private LevelSO _levelSO;
+        [Header("Test")]
+        [SerializeField] private LevelSO _levelTest;
+        [SerializeField] private bool _isTest;
         private void OnEnable()
         {
             _inputReader.OnSwipe += OnSwipe;
@@ -40,7 +41,13 @@ namespace Core
         {
             _inputReader.OnSwipe -= OnSwipe;
         }
-
+        private void Start()
+        {
+            if(_isTest)
+            {
+                Init(_levelTest);
+            }
+        }
         public void Init(LevelSO levelSO)
         {
             _levelSO = levelSO;
@@ -100,8 +107,9 @@ namespace Core
             if (gemA.GetGem().IsPowerUp || gemB.GetGem().IsPowerUp)
             {
                 var powerGem = gemA.GetGem().IsPowerUp ? gemA : gemB;
-                await _powerUpSystem.ActivatePowerUp(powerGem, gridPosA, gridPosB, _levelSO.width, _levelSO.height);
+                var gemsDestroyed = await _powerUpSystem.ActivatePowerUp(powerGem, gridPosA, gridPosB, _levelSO.width, _levelSO.height);
                 powerUpActivated = true;
+                ScoreManager.Instance.AddScore(ScoreType.PowerUp, gemsDestroyed);
             }
             if (powerUpActivated)
             {
@@ -117,8 +125,19 @@ namespace Core
                 _inputReader.InputEnabled = true;
                 return;
             }
+            var comboLevel = 0;
             while (matches.Count > 0)
             {
+                comboLevel++;
+                foreach (var matchGroup in matches)
+                {
+                    int matchSize = matchGroup.Positions.Count;
+                    ScoreManager.Instance.AddScore(ScoreType.Match, matchSize);
+                }
+                if(comboLevel > 1)
+                {
+                    ScoreManager.Instance.AddScore(ScoreType.Combo, comboLevel);
+                }
                 await _explodeSystem.ExplodeGems(matches);
                 await _gravityManager.MakeGemsFall();
                 await _gemFiller.FillEmptySpots(_gems);
