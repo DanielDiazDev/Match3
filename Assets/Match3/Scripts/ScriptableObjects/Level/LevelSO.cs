@@ -14,6 +14,7 @@ namespace ScriptableObjects.Level
         public int width;
         public int height;
         public SerializedDictionary<Vector2Int, GemSO> initialGems;
+        public SerializedDictionary<Vector2Int, ObstacleSO> initialObstacles;
         public AudioClip themeMusic;
         public Sprite backgroundSprite;
        // public bool isUnlocked; Ver si este o usar prefs

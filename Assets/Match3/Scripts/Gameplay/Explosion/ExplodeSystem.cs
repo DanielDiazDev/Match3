@@ -48,12 +48,43 @@ namespace Systems
                 // Destruir gemas del match
                 foreach (var pos in match.Positions)
                 {
-                    if (powerUpSO != null && pos == match.Origin)
-                        continue;
-
                     var gridObj = _gridSystem.GetValue(pos.x, pos.y);
                     if (gridObj == null) continue;
 
+                    Debug.Log($"Explode check at {pos}: HasObstacle={gridObj.HasObstacle()}, HasGem={gridObj.GetValue() != null}");
+
+                    // 1) SIEMPRE golpear obstáculo si existe (independiente de si es origen)
+                    if (gridObj.HasObstacle())
+                    {
+                        var obstacle = gridObj.GetObstacle();
+                        obstacle.Hit();
+                        if (obstacle.IsDestroyed())
+                        {
+                            _ = Tween.PunchScale(obstacle.Transform, Vector3.one * 0.2f, 0.15f, frequency: 2);
+                            _ = Tween.Scale(obstacle.Transform, Vector3.zero, 0.2f, Ease.InBack);
+                            GameObject.Destroy((obstacle as Obstacle).gameObject, maxDuration);
+                            gridObj.RemoveObstacle();
+                        }
+                    }
+
+                    // 2) Si corresponde generar powerUp en esta posición (es el origen), 
+                    //    no destruyas la gema aquí — eso lo maneja la generación del powerup.
+                    if (powerUpSO != null && pos == match.Origin)
+                    {
+                        // Asegurarnos de que el powerUp se genere correctamente:
+                        var oldGridObject = gridObj;
+                        if (oldGridObject != null && oldGridObject.GetValue() is Gem oldGem)
+                        {
+                            // si ya habías planeado destruir el oldGem y generar powerup, mantenlo
+                            GameObject.Destroy(oldGem.gameObject, maxDuration);
+                            _powerUpSystem.GeneratePowerUp(oldGem, match, powerUpSO);
+                        }
+
+                        // no seguir con la destrucción de gema normal
+                        continue;
+                    }
+
+                    // 3) Para todas las demás posiciones: destruir la gema si existe
                     var gem = gridObj.GetValue();
                     if (gem == null) continue;
 
@@ -67,7 +98,7 @@ namespace Systems
                 }
             }
 
-            await UniTask.Delay(TimeSpan.FromSeconds(maxDuration));
+                await UniTask.Delay(TimeSpan.FromSeconds(maxDuration));
             return destroyedCount;
         }
 
@@ -82,7 +113,23 @@ namespace Systems
                 {
                     Vector2Int pos = new(center.x + dx, center.y + dy);
                     var gridObj = _gridSystem.GetValue(pos.x, pos.y);
-                    if (gridObj?.GetValue() == null) continue;
+                    if (gridObj == null) continue;
+
+                    // Destruir obstáculo si existe
+                    if (gridObj.HasObstacle())
+                    {
+                        var obstacle = gridObj.GetObstacle();
+                        obstacle.Hit();
+                        if (obstacle.IsDestroyed())
+                        {
+                            _ = Tween.PunchScale(obstacle.Transform, Vector3.one * 0.2f, 0.15f, frequency: 2);
+                            _ = Tween.Scale(obstacle.Transform, Vector3.zero, 0.2f, Ease.InBack);
+                            GameObject.Destroy((obstacle as Obstacle).gameObject, maxDuration);
+                            gridObj.RemoveObstacle();
+                        }
+                    }
+
+                    if (gridObj.GetValue() == null) continue;
 
                     var gem = gridObj.GetValue();
                     _gridSystem.SetValue(pos.x, pos.y, null);
@@ -112,7 +159,23 @@ namespace Systems
                 int y = horizontal ? origin.y : i;
 
                 var gridObj = _gridSystem.GetValue(x, y);
-                if (gridObj?.GetValue() == null) continue;
+                if (gridObj == null) continue;
+
+                // Destruir obstáculo si existe
+                if (gridObj.HasObstacle())
+                {
+                    var obstacle = gridObj.GetObstacle();
+                    obstacle.Hit();
+                    if (obstacle.IsDestroyed())
+                    {
+                        _ = Tween.PunchScale(obstacle.Transform, Vector3.one * 0.2f, 0.15f, frequency: 2);
+                        _ = Tween.Scale(obstacle.Transform, Vector3.zero, 0.2f, Ease.InBack);
+                        GameObject.Destroy((obstacle as Obstacle).gameObject, maxDuration);
+                        gridObj.RemoveObstacle();
+                    }
+                }
+
+                if (gridObj.GetValue() == null) continue;
 
                 var gem = gridObj.GetValue();
                 _gridSystem.SetValue(x, y, null);
@@ -138,7 +201,23 @@ namespace Systems
                 for (int y = 0; y < height; y++)
                 {
                     var gridObj = _gridSystem.GetValue(x, y);
-                    if (gridObj?.GetValue() == null) continue;
+                    if (gridObj == null) continue;
+
+                    // Destruir obstáculo si existe
+                    if (gridObj.HasObstacle())
+                    {
+                        var obstacle = gridObj.GetObstacle();
+                        obstacle.Hit();
+                        if (obstacle.IsDestroyed())
+                        {
+                            _ = Tween.PunchScale(obstacle.Transform, Vector3.one * 0.2f, 0.15f, frequency: 2);
+                            _ = Tween.Scale(obstacle.Transform, Vector3.zero, 0.2f, Ease.InBack);
+                            GameObject.Destroy((obstacle as Obstacle).gameObject, maxDuration);
+                            gridObj.RemoveObstacle();
+                        }
+                    }
+
+                    if (gridObj.GetValue() == null) continue;
 
                     var gem = gridObj.GetValue();
                     if (gem.GetGem() != gemSO) continue;

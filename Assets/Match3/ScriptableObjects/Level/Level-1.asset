@@ -30,5 +30,15 @@ MonoBehaviour:
       Value: {fileID: 11400000, guid: 6f49dea41c1076c44b06a035a4b27945, type: 2}
     - Key: {x: 0, y: 3}
       Value: {fileID: 11400000, guid: 6f49dea41c1076c44b06a035a4b27945, type: 2}
+  initialObstacles:
+    _serializedList:
+    - Key: {x: 0, y: 0}
+      Value: {fileID: 11400000, guid: 1f6d163dda5639540a78c71612887427, type: 2}
+    - Key: {x: 0, y: 1}
+      Value: {fileID: 11400000, guid: 1f6d163dda5639540a78c71612887427, type: 2}
+    - Key: {x: 0, y: 2}
+      Value: {fileID: 11400000, guid: 1f6d163dda5639540a78c71612887427, type: 2}
+    - Key: {x: 0, y: 3}
+      Value: {fileID: 0}
   themeMusic: {fileID: 0}
   backgroundSprite: {fileID: 0}

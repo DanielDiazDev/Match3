@@ -29,17 +29,37 @@ namespace Systems
                 int emptyY = -1;
                 for (var y = 0; y < _height; y++)
                 {
-                    if (_gridSystem.GetValue(x, y) == null)
+                    var gridObject = _gridSystem.GetValue(x, y);
+                    bool isEmpty = gridObject == null || gridObject.GetValue() == null;
+                    
+                    if (isEmpty)
                     {
                         if (emptyY == -1) emptyY = y;
                     }
                     else if (emptyY != -1)
                     {
                         moved = true;
-                        var gridObject = _gridSystem.GetValue(x, y);
                         var gem = gridObject.GetValue();
-                        _gridSystem.SetValue(x, emptyY, gridObject);
-                        _gridSystem.SetValue(x, y, null);
+                        
+                        // Si hay un obstáculo, separar la gema del obstáculo
+                        if (gridObject.HasObstacle())
+                        {
+                            var obstacle = gridObject.GetObstacle();
+                            
+                            // Crear nuevo GridObject para la gema en la nueva posición
+                            var newGridObject = new GridObject<IGem>(_gridSystem, x, emptyY);
+                            newGridObject.SetValue(gem);
+                            _gridSystem.SetValue(x, emptyY, newGridObject);
+                            
+                            // El obstáculo se queda en su posición original (sin gema)
+                            gridObject.SetValue(default(IGem)); // Remover la gema del GridObject original
+                            // El obstáculo ya está en el GridObject original, no necesitamos hacer nada más
+                        }
+                        else
+                        {
+                            _gridSystem.SetValue(x, emptyY, gridObject);
+                            _gridSystem.SetValue(x, y, null);
+                        }
 
                         var targetPos = _gridSystem.GetWorldPositionCenter(x, emptyY);
                         _ = Tween.LocalPosition(gem.Transform, targetPos, maxDuration, Ease.InQuad);

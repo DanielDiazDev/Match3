@@ -126,10 +126,11 @@ namespace Systems
                 int count = 1;
                 for (int x = 1; x < width; x++)
                 {
-                    var current = gridSystem.GetValue(x, y);
-                    var previous = gridSystem.GetValue(x - 1, y);
-                    var currentGem = current.GetValue().GetGem();
-                    var previousGem = previous.GetValue().GetGem();
+                    var currentObj = gridSystem.GetValue(x, y);
+                    var previousObj = gridSystem.GetValue(x - 1, y);
+
+                    var currentGem = currentObj?.GetValue()?.GetGem();
+                    var previousGem = previousObj?.GetValue()?.GetGem();
 
                     if (currentGem == null || previousGem == null)
                         count = 1;
@@ -137,13 +138,15 @@ namespace Systems
                         count++;
                     else
                         count = 1;
+
                     if (count >= 3)
                     {
                         var positions = Enumerable.Range(x - count + 1, count)
-                            .Select(p=> new Vector2Int(p, y))
+                            .Select(p => new Vector2Int(p, y))
                             .ToList();
-                        matches.Add(new MatchData(positions, 
-                            MatchPattern.LineHorizontal, 
+
+                        matches.Add(new MatchData(positions,
+                            MatchPattern.LineHorizontal,
                             positions[positions.Count / 2]));
                     }
                 }
@@ -151,6 +154,7 @@ namespace Systems
             return matches;
         }
     }
+
     public class LineVerticalMatchDetector : IMatchDetector
     {
         public List<MatchData> FindMatches(GridSystem<GridObject<IGem>> gridSystem, int width, int height)
@@ -161,18 +165,26 @@ namespace Systems
                 int count = 1;
                 for (int y = 1; y < height; y++)
                 {
-                    var current = gridSystem.GetValue(x, y);
-                    var previous = gridSystem.GetValue(x, y - 1);
+                    var currentObj = gridSystem.GetValue(x, y);
+                    var previousObj = gridSystem.GetValue(x, y - 1);
 
-                    var currentGem = current.GetValue().GetGem();
-                    var previousGem = previous.GetValue().GetGem();
+                    // Protección contra null en el GridObject o en su valor
+                    var currentGem = currentObj?.GetValue()?.GetGem();
+                    var previousGem = previousObj?.GetValue()?.GetGem();
 
+                    // Si falta cualquiera, reiniciamos el conteo
                     if (currentGem == null || previousGem == null)
+                    {
                         count = 1;
+                    }
                     else if (!currentGem.IsPowerUp && !previousGem.IsPowerUp && currentGem == previousGem)
+                    {
                         count++;
+                    }
                     else
+                    {
                         count = 1;
+                    }
 
                     if (count >= 3)
                     {

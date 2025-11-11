@@ -24,6 +24,8 @@ namespace Core
         private GridSystem<GridObject<IGem>> _gridSystem;
         private GemFactory _gemFactory;
         private GemSpawner _gemSpawner;
+        private ObstacleFactory _obstacleFactory;
+        private ObstacleSpawner _obstacleSpawner;
         private SwapHandler _swapHandler;
         private MatchFinder _matchFinder;
         private GravityManager _gravityManager;
@@ -52,6 +54,7 @@ namespace Core
         {
             _levelSO = levelSO;
             _gemFactory = new(transform);
+            _obstacleFactory = new(transform);
 
             InitializeGrid();
         }
@@ -73,12 +76,32 @@ namespace Core
         {
             _gridSystem = GridSystem<GridObject<IGem>>.VerticalGrid(_levelSO.width, _levelSO.height, _cellSize, _originPosition, _debug);
             _gemSpawner = new(_gemFactory, _gridSystem);
+            _obstacleSpawner = new(_obstacleFactory, _gridSystem);
             _swapHandler = new(_gridSystem);
             _matchFinder = new(_levelSO.height, _levelSO.width, _gridSystem);
             _explodeSystem.Init(_gridSystem);
             _powerUpSystem.Init(_gridSystem, _explodeSystem);
             _gravityManager = new(_gridSystem, _levelSO.width, _levelSO.height);
             _gemFiller = new(_gridSystem, _levelSO.width, _levelSO.height, _gemSpawner);
+            
+            // Inicializar obstáculos primero
+            for (var x = 0; x < _levelSO.width; x++)
+            {
+                for (var y = 0; y < _levelSO.height; y++)
+                {
+                    var position = new Vector2Int(x, y);
+
+                    if (_levelSO.initialObstacles != null && _levelSO.initialObstacles.TryGetValue(position, out var obstacleSO))
+                    {
+                        if (obstacleSO == null) continue;
+                        var worldPos = _gridSystem.GetWorldPositionCenter(x, y);
+                        _obstacleSpawner.CreateObstacle(obstacleSO, x, y, worldPos);
+
+                    }
+                }
+            }
+            
+            // Inicializar gemas
             for (var x = 0; x < _levelSO.width; x++)
             {
                 for (var y = 0; y < _levelSO.height; y++)

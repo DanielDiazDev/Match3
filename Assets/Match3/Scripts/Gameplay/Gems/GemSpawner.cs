@@ -23,9 +23,15 @@ namespace Systems
             var gem = _gemFactory.Create(gemSO, spawnPosition, Quaternion.identity);
             gem.Init(gemSO);
 
-            var gridObject = new GridObject<IGem>(_gridSystem, x, y);
+            // Verificar si ya existe un GridObject (por ejemplo, si hay un obstáculo)
+            var gridObject = _gridSystem.GetValue(x, y);
+            if (gridObject == null)
+            {
+                gridObject = new GridObject<IGem>(_gridSystem, x, y);
+                _gridSystem.SetValue(x, y, gridObject);
+            }
+            
             gridObject.SetValue(gem);
-            _gridSystem.SetValue(x, y, gridObject);
 
             if (animate)
             {

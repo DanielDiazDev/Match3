@@ -6,6 +6,7 @@ namespace Core
         public int x { get; private set; }
         public int y { get; private set; }
         private T _gem;
+        private IObstacle _obstacle;
 
         public GridObject(GridSystem<GridObject<T>> grid, int x, int y)
         {
@@ -20,5 +21,19 @@ namespace Core
         }
 
         public T GetValue() => _gem;
+
+        public void SetObstacle(IObstacle obstacle)
+        {
+            _obstacle = obstacle;
+        }
+
+        public IObstacle GetObstacle() => _obstacle;
+
+        public bool HasObstacle() => _obstacle != null;
+
+        public void RemoveObstacle()
+        {
+            _obstacle = null;
+        }
     }
 }
