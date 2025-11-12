@@ -17,7 +17,11 @@ MonoBehaviour:
     _serializedList: []
   objetivesGems:
     _serializedList: []
-  moveLimit: 0
+  objetives:
+  - {fileID: 11400000, guid: d56f6331222e3804a8ddfd69746cf023, type: 2}
+  - {fileID: 11400000, guid: a11495dfaebdeb741bae5c0b0e8c6b7e, type: 2}
+  - {fileID: 11400000, guid: 35d5c70e10be0d5498046fa532880321, type: 2}
+  moveLimit: 5
   width: 1
   height: 4
   initialGems:

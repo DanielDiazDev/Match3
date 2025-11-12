@@ -1,5 +1,6 @@
 ﻿using Core;
 using Cysharp.Threading.Tasks;
+using Level;
 using PrimeTween;
 using ScriptableObjects;
 using System;
@@ -12,10 +13,11 @@ namespace Systems
     {
         private GridSystem<GridObject<IGem>> _gridSystem;
         [SerializeField] private PowerUpSystem _powerUpSystem;
-
+        private ObjectiveSystem _objectiveSystem;
         public void Init(GridSystem<GridObject<IGem>> gridSystem)
         {
             _gridSystem = gridSystem;
+            _objectiveSystem = ServiceLocator.Instance.Get<ObjectiveSystem>();
         }
 
         public async UniTask<int> ExplodeGems(List<MatchData> matches)
@@ -53,7 +55,6 @@ namespace Systems
 
                     Debug.Log($"Explode check at {pos}: HasObstacle={gridObj.HasObstacle()}, HasGem={gridObj.GetValue() != null}");
 
-                    // 1) SIEMPRE golpear obstáculo si existe (independiente de si es origen)
                     if (gridObj.HasObstacle())
                     {
                         var obstacle = gridObj.GetObstacle();
@@ -64,32 +65,27 @@ namespace Systems
                             _ = Tween.Scale(obstacle.Transform, Vector3.zero, 0.2f, Ease.InBack);
                             GameObject.Destroy((obstacle as Obstacle).gameObject, maxDuration);
                             gridObj.RemoveObstacle();
+                            _objectiveSystem?.ObstacleDestroyed();
                         }
                     }
 
-                    // 2) Si corresponde generar powerUp en esta posición (es el origen), 
-                    //    no destruyas la gema aquí — eso lo maneja la generación del powerup.
                     if (powerUpSO != null && pos == match.Origin)
                     {
-                        // Asegurarnos de que el powerUp se genere correctamente:
                         var oldGridObject = gridObj;
                         if (oldGridObject != null && oldGridObject.GetValue() is Gem oldGem)
                         {
-                            // si ya habías planeado destruir el oldGem y generar powerup, mantenlo
                             GameObject.Destroy(oldGem.gameObject, maxDuration);
                             _powerUpSystem.GeneratePowerUp(oldGem, match, powerUpSO);
                         }
 
-                        // no seguir con la destrucción de gema normal
                         continue;
                     }
 
-                    // 3) Para todas las demás posiciones: destruir la gema si existe
                     var gem = gridObj.GetValue();
                     if (gem == null) continue;
 
                     _gridSystem.SetValue(pos.x, pos.y, null);
-
+                    _objectiveSystem?.GemDestroyed(gem.GetGem().name);
                     _ = Tween.PunchScale(gem.Transform, Vector3.one * 0.2f, 0.15f, frequency: 2);
                     _ = Tween.Scale(gem.Transform, Vector3.zero, 0.2f, Ease.InBack);
                     GameObject.Destroy((gem as Gem).gameObject, maxDuration);
@@ -126,6 +122,7 @@ namespace Systems
                             _ = Tween.Scale(obstacle.Transform, Vector3.zero, 0.2f, Ease.InBack);
                             GameObject.Destroy((obstacle as Obstacle).gameObject, maxDuration);
                             gridObj.RemoveObstacle();
+                            _objectiveSystem?.ObstacleDestroyed();
                         }
                     }
 
@@ -133,7 +130,7 @@ namespace Systems
 
                     var gem = gridObj.GetValue();
                     _gridSystem.SetValue(pos.x, pos.y, null);
-
+                    _objectiveSystem?.GemDestroyed(gem.GetGem().name);
                     _ = Tween.PunchScale(gem.Transform, Vector3.one * 0.2f, 0.15f, frequency: 2);
                     _ = Tween.Scale(gem.Transform, Vector3.zero, 0.2f, Ease.InBack);
                     GameObject.Destroy((gem as Gem).gameObject, maxDuration);
@@ -172,6 +169,7 @@ namespace Systems
                         _ = Tween.Scale(obstacle.Transform, Vector3.zero, 0.2f, Ease.InBack);
                         GameObject.Destroy((obstacle as Obstacle).gameObject, maxDuration);
                         gridObj.RemoveObstacle();
+                        _objectiveSystem?.ObstacleDestroyed();
                     }
                 }
 
@@ -179,7 +177,7 @@ namespace Systems
 
                 var gem = gridObj.GetValue();
                 _gridSystem.SetValue(x, y, null);
-
+                _objectiveSystem?.GemDestroyed(gem.GetGem().name);
                 _ = Tween.PunchScale(gem.Transform, Vector3.one * 0.2f, 0.15f, frequency: 2);
                 _ = Tween.Scale(gem.Transform, Vector3.zero, 0.2f, Ease.InBack);
                 GameObject.Destroy((gem as Gem).gameObject, maxDuration);
@@ -214,6 +212,7 @@ namespace Systems
                             _ = Tween.Scale(obstacle.Transform, Vector3.zero, 0.2f, Ease.InBack);
                             GameObject.Destroy((obstacle as Obstacle).gameObject, maxDuration);
                             gridObj.RemoveObstacle();
+                            _objectiveSystem?.ObstacleDestroyed();
                         }
                     }
 
@@ -223,7 +222,7 @@ namespace Systems
                     if (gem.GetGem() != gemSO) continue;
 
                     _gridSystem.SetValue(x, y, null);
-
+                    _objectiveSystem?.GemDestroyed(gem.GetGem().name);
                     _ = Tween.PunchScale(gem.Transform, Vector3.one * 0.2f, 0.15f, frequency: 2);
                     _ = Tween.Scale(gem.Transform, Vector3.zero, 0.2f, Ease.InBack);
                     GameObject.Destroy((gem as Gem).gameObject, maxDuration);

@@ -1,4 +1,3 @@
-using AYellowpaper.SerializedCollections;
 using System;
 using System.Collections.Generic;
 using Systems.Score.Strategies;
@@ -14,7 +13,6 @@ namespace Systems.Score
     }
     public class ScoreManager : MonoBehaviour
     {
-        public static ScoreManager Instance { get; private set; } //temporal
         public event Action<int> OnScoreChanged;
         public event Action< ScoreType, int> OnScoreEffectChanged;
 
@@ -30,13 +28,6 @@ namespace Systems.Score
 
         private void Awake()
         {
-            if (Instance != null && Instance != this)
-            {
-                Destroy(gameObject);
-                return;
-            }
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
             _scoreStrategies = new Dictionary<ScoreType, IScoreStrategy>
         {
             { ScoreType.Match, _matchStrategy },
@@ -44,18 +35,24 @@ namespace Systems.Score
             { ScoreType.Combo, _comboStrategy }
         };
         }
-        public void AddScore(ScoreType type, int value)
+        public int AddScore(ScoreType type, int value)
         {
             if (!_scoreStrategies.ContainsKey(type))
             {
                 Debug.LogWarning($"No strategy found for score type: {type}");
-                return;
+                return 0;
             }
+
             var points = _scoreStrategies[type].CalculateScore(value);
             OnScoreEffectChanged?.Invoke(type, points);
+
             _currentScore += points;
             OnScoreChanged?.Invoke(_currentScore);
+
+            return points; 
         }
+
+        public int GetScore() => _currentScore;
 
         public void ResetScore()
         {

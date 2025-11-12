@@ -2,7 +2,6 @@ using Core;
 using ScriptableObjects.Level;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using Systems;
 using UI.Level;
 using UnityEngine;
@@ -41,7 +40,8 @@ namespace Level
 
         private void OnLevelSelected(LevelSO level)
         {
-            ServiceLocator.Instance.Get<GameManager>().SetCurrentLevel(level);
+            var gameManager = ServiceLocator.Instance.Get<GameManager>();
+            gameManager.SetCurrentLevel(level);
             SceneManager.LoadScene("Game");
         }
     }

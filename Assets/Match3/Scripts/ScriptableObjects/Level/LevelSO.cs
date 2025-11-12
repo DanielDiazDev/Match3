@@ -1,5 +1,7 @@
 ﻿using AYellowpaper.SerializedCollections;
 using ScriptableObjects;
+using ScriptableObjects.Level.Objetives;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ScriptableObjects.Level
@@ -10,6 +12,7 @@ namespace ScriptableObjects.Level
         public int levelID;
         public SerializedDictionary<int, int> scores;
         public SerializedDictionary<GemSO, int> objetivesGems;
+        public List<ObjectiveBaseSO> objetives;
         public int moveLimit;
         public int width;
         public int height;

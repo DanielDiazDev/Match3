@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using Input;
+using Level;
 using ScriptableObjects;
 using ScriptableObjects.Level;
 using System.Collections.Generic;
@@ -21,6 +22,8 @@ namespace Core
         [SerializeField] private InputReader _inputReader;
         [SerializeField] private PowerUpSystem _powerUpSystem;
         [SerializeField] private ExplodeSystem _explodeSystem;
+        [SerializeField] private UIEndGame _uiEndGame;
+        [SerializeField] private ScoreManager _scoreManager;
         private GridSystem<GridObject<IGem>> _gridSystem;
         private GemFactory _gemFactory;
         private GemSpawner _gemSpawner;
@@ -31,6 +34,7 @@ namespace Core
         private GravityManager _gravityManager;
         private GemFiller _gemFiller;
         private LevelSO _levelSO;
+        private ObjectiveSystem _objectiveSystem;
         [Header("Test")]
         [SerializeField] private LevelSO _levelTest;
         [SerializeField] private bool _isTest;
@@ -42,6 +46,8 @@ namespace Core
         private void OnDestroy()
         {
             _inputReader.OnSwipe -= OnSwipe;
+            ServiceLocator.Instance.Unregister<ObjectiveSystem>();
+            ServiceLocator.Instance.Unregister<ScoreManager>();
         }
         private void Start()
         {
@@ -53,6 +59,9 @@ namespace Core
         public void Init(LevelSO levelSO)
         {
             _levelSO = levelSO;
+            _objectiveSystem = new(_levelSO.objetives);
+            ServiceLocator.Instance.Register(_objectiveSystem);
+            ServiceLocator.Instance.Register(_scoreManager);
             _gemFactory = new(transform);
             _obstacleFactory = new(transform);
 
@@ -132,7 +141,8 @@ namespace Core
                 var powerGem = gemA.GetGem().IsPowerUp ? gemA : gemB;
                 var gemsDestroyed = await _powerUpSystem.ActivatePowerUp(powerGem, gridPosA, gridPosB, _levelSO.width, _levelSO.height);
                 powerUpActivated = true;
-                ScoreManager.Instance.AddScore(ScoreType.PowerUp, gemsDestroyed);
+                var points = ServiceLocator.Instance.Get<ScoreManager>().AddScore(ScoreType.PowerUp, gemsDestroyed);
+                _objectiveSystem.AddScore(points);
             }
             if (powerUpActivated)
             {
@@ -155,17 +165,26 @@ namespace Core
                 foreach (var matchGroup in matches)
                 {
                     int matchSize = matchGroup.Positions.Count;
-                    ScoreManager.Instance.AddScore(ScoreType.Match, matchSize);
+                    var points = ServiceLocator.Instance.Get<ScoreManager>().AddScore(ScoreType.Match, matchSize);
+                    _objectiveSystem.AddScore(points);
+
                 }
                 if(comboLevel > 1)
                 {
-                    ScoreManager.Instance.AddScore(ScoreType.Combo, comboLevel);
+                    var points = ServiceLocator.Instance.Get<ScoreManager>().AddScore(ScoreType.Combo, comboLevel);
+                    _objectiveSystem.AddScore(points);
+
                 }
                 await _explodeSystem.ExplodeGems(matches);
                 await _gravityManager.MakeGemsFall();
                 await _gemFiller.FillEmptySpots(_gems);
 
                 matches = _matchFinder.FindMatches();
+            }
+            if (_objectiveSystem.AllObjectivesIsCompleted() || _levelSO.moveLimit == 0)
+            {
+                _uiEndGame.ShowEnd();
+                _objectiveSystem.SetLevelComplete();
             }
             _inputReader.InputEnabled = true;
             // TODO: Check if game is over

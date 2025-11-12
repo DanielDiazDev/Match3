@@ -7,4 +7,5 @@ namespace ScriptableObjects.Level
     {
         public LevelSO[] levels;
     }
+
 }
