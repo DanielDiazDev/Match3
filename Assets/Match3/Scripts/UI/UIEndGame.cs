@@ -18,10 +18,11 @@ public class UIEndGame : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _scoreFinalText;
     [SerializeField] private TextMeshProUGUI _resultText;
     [SerializeField] private Button _btnNextLevel;
-    [SerializeField] private Button _btnLevelSelector;
+    [SerializeField] private Button _btnGoToMainMenu;
     [SerializeField] private Button _btnReset;
     [SerializeField] private LevelDatabaseSO _levelDatabaseSO;
     private ObjectiveSystem _objectiveSystem;
+    private GameManager _gameManager;
     private void OnEnable()
     {
         _objectiveSystem = ServiceLocator.Instance.Get<ObjectiveSystem>();
@@ -32,37 +33,35 @@ public class UIEndGame : MonoBehaviour
         UpdateScore();
         _resultText.text = _objectiveSystem.IsLevelComplete() ? "Victory" : "Failure";
         _btnNextLevel.onClick.AddListener(GoToNextLevel);
-        _btnLevelSelector.onClick.AddListener(GoToLevelSelector);
+        _btnGoToMainMenu.onClick.AddListener(GoToMainMenu);
         _btnReset.onClick.AddListener(ResetLevel);
+        var levels = _levelDatabaseSO.levels;
+        _gameManager = ServiceLocator.Instance.Get<GameManager>(); 
+        var currentLevel = _gameManager.CurrentLevelSO;
+
+        var currentIndex = Array.IndexOf(levels, currentLevel);
+        _btnNextLevel.interactable = currentIndex >= 0 && currentIndex < levels.Length - 1;
     }
 
     private void ResetLevel()
     {
-        throw new NotImplementedException();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    private void GoToLevelSelector()
+    private void GoToMainMenu()
     {
-        throw new NotImplementedException();
+        SceneManager.LoadScene("MainMenu");
     }
 
     private void GoToNextLevel()
     {
-        var gameManager = ServiceLocator.Instance.Get<GameManager>();
         var levels = _levelDatabaseSO.levels;
-        var currentLevel = gameManager.CurrentLevelSO;
+        var currentLevel = _gameManager.CurrentLevelSO;
 
         var currentIndex = Array.IndexOf(levels, currentLevel);
-        if (currentIndex >= 0 && currentIndex < levels.Length - 1)
-        {
-            var siguiente = levels[currentIndex + 1];
-            gameManager.SetCurrentLevel(siguiente);
-            SceneManager.LoadScene("Game");
-        }
-        else
-        {
-            _btnNextLevel.interactable = false;
-        }
+        var next = levels[currentIndex + 1];
+        _gameManager.SetCurrentLevel(next);
+        SceneManager.LoadScene("Game");
     }
 
     private void OnDestroy()

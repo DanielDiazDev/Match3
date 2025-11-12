@@ -15,6 +15,7 @@ namespace Systems
             if (!ServiceLocator.Instance.Has<GameManager>())
             {
                 var gm = Instantiate(_gameManagerPrefab);
+                DontDestroyOnLoad(gm.gameObject);
                 ServiceLocator.Instance.Register(gm);
             }
             if (!ServiceLocator.Instance.Has<ISaveSystem>())

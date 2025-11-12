@@ -17,10 +17,32 @@ MonoBehaviour:
     _serializedList: []
   objetivesGems:
     _serializedList: []
-  moveLimit: 0
-  width: 0
-  height: 0
+  objetives:
+  - {fileID: 11400000, guid: d56f6331222e3804a8ddfd69746cf023, type: 2}
+  - {fileID: 11400000, guid: a11495dfaebdeb741bae5c0b0e8c6b7e, type: 2}
+  - {fileID: 11400000, guid: 35d5c70e10be0d5498046fa532880321, type: 2}
+  moveLimit: 5
+  width: 1
+  height: 4
   initialGems:
-    _serializedList: []
+    _serializedList:
+    - Key: {x: 0, y: 0}
+      Value: {fileID: 11400000, guid: 6f49dea41c1076c44b06a035a4b27945, type: 2}
+    - Key: {x: 0, y: 1}
+      Value: {fileID: 11400000, guid: 6f49dea41c1076c44b06a035a4b27945, type: 2}
+    - Key: {x: 0, y: 2}
+      Value: {fileID: 11400000, guid: 6f49dea41c1076c44b06a035a4b27945, type: 2}
+    - Key: {x: 0, y: 3}
+      Value: {fileID: 11400000, guid: 6f49dea41c1076c44b06a035a4b27945, type: 2}
+  initialObstacles:
+    _serializedList:
+    - Key: {x: 0, y: 0}
+      Value: {fileID: 11400000, guid: 1f6d163dda5639540a78c71612887427, type: 2}
+    - Key: {x: 0, y: 1}
+      Value: {fileID: 11400000, guid: 1f6d163dda5639540a78c71612887427, type: 2}
+    - Key: {x: 0, y: 2}
+      Value: {fileID: 11400000, guid: 1f6d163dda5639540a78c71612887427, type: 2}
+    - Key: {x: 0, y: 3}
+      Value: {fileID: 0}
   themeMusic: {fileID: 0}
   backgroundSprite: {fileID: 0}

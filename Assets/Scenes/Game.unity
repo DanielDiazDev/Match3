@@ -470,9 +470,9 @@ MonoBehaviour:
   _scoreFinalText: {fileID: 1654206989}
   _resultText: {fileID: 1861464273}
   _btnNextLevel: {fileID: 650702079}
-  _btnLevelSelector: {fileID: 1002083434}
+  _btnGoToMainMenu: {fileID: 1002083434}
   _btnReset: {fileID: 1220288634}
-  _levelDatabaseSO: {fileID: 0}
+  _levelDatabaseSO: {fileID: 11400000, guid: d2aa8173175d0214c9b48785247b76af, type: 2}
 --- !u!1 &509928063
 GameObject:
   m_ObjectHideFlags: 0
@@ -1202,7 +1202,7 @@ GameObject:
   - component: {fileID: 1002083432}
   - component: {fileID: 1002083434}
   m_Layer: 5
-  m_Name: GoToLevelSelectorButton
+  m_Name: GoToMainMenuButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
