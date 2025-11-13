@@ -44,8 +44,6 @@ namespace Systems
                         // Si hay un obstáculo, separar la gema del obstáculo
                         if (gridObject.HasObstacle())
                         {
-                            var obstacle = gridObject.GetObstacle();
-                            
                             // Crear nuevo GridObject para la gema en la nueva posición
                             var newGridObject = new GridObject<IGem>(_gridSystem, x, emptyY);
                             newGridObject.SetValue(gem);

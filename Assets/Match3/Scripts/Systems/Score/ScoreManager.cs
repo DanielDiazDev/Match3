@@ -34,6 +34,7 @@ namespace Systems.Score
             { ScoreType.PowerUp, _powerUpStrategy },
             { ScoreType.Combo, _comboStrategy }
         };
+            OnScoreChanged?.Invoke(0);
         }
         public int AddScore(ScoreType type, int value)
         {

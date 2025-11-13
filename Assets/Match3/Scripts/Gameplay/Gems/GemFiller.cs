@@ -29,10 +29,10 @@ namespace Systems
             {
                 for (var y = 0; y < _height; y++)
                 {
-                    if (_gridSystem.GetValue(x, y) == null)
+                    var gridObject = _gridSystem.GetValue(x, y);
+                    if (gridObject == null || gridObject.GetValue() == null)
                     {
                         _gemSpawner.CreateGem(gemTypes[UnityEngine.Random.Range(0, gemTypes.Length)], x, y, _gridSystem.GetWorldPositionCenter(x, _height + 1), true);
-                        // CreateGem(x, y, _gridSystem.GetWorldPositionCenter(x, _height + 1), true);
                         //audioManager.PlayPop();
                     }
                 }

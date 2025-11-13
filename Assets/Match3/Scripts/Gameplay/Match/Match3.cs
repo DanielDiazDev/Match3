@@ -1,3 +1,4 @@
+using UI;
 using Cysharp.Threading.Tasks;
 using Input;
 using Level;
@@ -143,6 +144,8 @@ namespace Core
                 powerUpActivated = true;
                 var points = ServiceLocator.Instance.Get<ScoreManager>().AddScore(ScoreType.PowerUp, gemsDestroyed);
                 _objectiveSystem.AddScore(points);
+                ServiceLocator.Instance.Get<GameManager>().UseMove();
+
             }
             if (powerUpActivated)
             {
@@ -158,6 +161,7 @@ namespace Core
                 _inputReader.InputEnabled = true;
                 return;
             }
+            ServiceLocator.Instance.Get<GameManager>().UseMove();
             var comboLevel = 0;
             while (matches.Count > 0)
             {
@@ -181,7 +185,8 @@ namespace Core
 
                 matches = _matchFinder.FindMatches();
             }
-            if (_objectiveSystem.AllObjectivesIsCompleted() || _levelSO.moveLimit == 0)
+            
+            if (_objectiveSystem.AllObjectivesIsCompleted() || ServiceLocator.Instance.Get<GameManager>().LimitFinish())
             {
                 _uiEndGame.ShowEnd();
                 _objectiveSystem.SetLevelComplete();

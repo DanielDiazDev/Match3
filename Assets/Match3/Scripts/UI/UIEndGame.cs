@@ -11,81 +11,92 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class UIEndGame : MonoBehaviour
+namespace UI
 {
-    [SerializeField] private Image[] _stars;
-    [SerializeField] private Sprite _fullStar;
-    [SerializeField] private TextMeshProUGUI _scoreFinalText;
-    [SerializeField] private TextMeshProUGUI _resultText;
-    [SerializeField] private Button _btnNextLevel;
-    [SerializeField] private Button _btnGoToMainMenu;
-    [SerializeField] private Button _btnReset;
-    [SerializeField] private LevelDatabaseSO _levelDatabaseSO;
-    private ObjectiveSystem _objectiveSystem;
-    private GameManager _gameManager;
-    private void OnEnable()
+    public class UIEndGame : MonoBehaviour
     {
-        _objectiveSystem = ServiceLocator.Instance.Get<ObjectiveSystem>();
-        _objectiveSystem.OnStarsEarned += UpdateStars;
-    }
-    private void Start()
-    {
-        UpdateScore();
-        _resultText.text = _objectiveSystem.IsLevelComplete() ? "Victory" : "Failure";
-        _btnNextLevel.onClick.AddListener(GoToNextLevel);
-        _btnGoToMainMenu.onClick.AddListener(GoToMainMenu);
-        _btnReset.onClick.AddListener(ResetLevel);
-        var levels = _levelDatabaseSO.levels;
-        _gameManager = ServiceLocator.Instance.Get<GameManager>(); 
-        var currentLevel = _gameManager.CurrentLevelSO;
-
-        var currentIndex = Array.IndexOf(levels, currentLevel);
-        _btnNextLevel.interactable = currentIndex >= 0 && currentIndex < levels.Length - 1;
-    }
-
-    private void ResetLevel()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-    }
-
-    private void GoToMainMenu()
-    {
-        SceneManager.LoadScene("MainMenu");
-    }
-
-    private void GoToNextLevel()
-    {
-        var levels = _levelDatabaseSO.levels;
-        var currentLevel = _gameManager.CurrentLevelSO;
-
-        var currentIndex = Array.IndexOf(levels, currentLevel);
-        var next = levels[currentIndex + 1];
-        _gameManager.SetCurrentLevel(next);
-        SceneManager.LoadScene("Game");
-    }
-
-    private void OnDestroy()
-    {
-        _objectiveSystem.OnStarsEarned -= UpdateStars;
-    }
-    private void UpdateScore()
-    {
-        _scoreFinalText.text = ServiceLocator.Instance.Get<ScoreManager>().GetScore().ToString();
-    }
-
-    
-    public void UpdateStars(int starsEarned)
-    {
-        for(int i = 0; i < _stars.Length; i++)
+        [SerializeField] private Image[] _stars;
+        [SerializeField] private Sprite _fullStar;
+        [SerializeField] private TextMeshProUGUI _scoreFinalText;
+        [SerializeField] private TextMeshProUGUI _resultText;
+        [SerializeField] private Button _btnNextLevel;
+        [SerializeField] private Button _btnGoToMainMenu;
+        [SerializeField] private Button _btnReset;
+        [SerializeField] private LevelDatabaseSO _levelDatabaseSO;
+        private ObjectiveSystem _objectiveSystem;
+        private GameManager _gameManager;
+        private void OnEnable()
         {
-            if(i < starsEarned)
+            _objectiveSystem = ServiceLocator.Instance.Get<ObjectiveSystem>();
+            _objectiveSystem.OnStarsEarned += UpdateStars;
+        }
+        private void Start()
+        {
+            UpdateScore();
+            
+            _btnNextLevel.onClick.AddListener(GoToNextLevel);
+            _btnGoToMainMenu.onClick.AddListener(GoToMainMenu);
+            _btnReset.onClick.AddListener(ResetLevel);
+            var levels = _levelDatabaseSO.levels;
+            _gameManager = ServiceLocator.Instance.Get<GameManager>();
+            var currentLevel = _gameManager.CurrentLevelSO;
+            if (_objectiveSystem.IsLevelComplete())
             {
-                _stars[i].sprite = _fullStar;
+                _resultText.text = "Victory";
+                ServiceLocator.Instance.Get<ILevelProgress>().SetStars(currentLevel.levelID.ToString(), _objectiveSystem.GetStarCount());
+            }
+            else
+            {
+                _resultText.text = "Failure";
+            }
+            var currentIndex = Array.IndexOf(levels, currentLevel);
+            _btnNextLevel.interactable = currentIndex >= 0 && currentIndex < levels.Length - 1;
+        }
+
+        private void ResetLevel()
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+
+        private void GoToMainMenu()
+        {
+            SceneManager.LoadScene("MainMenu");
+        }
+
+        private void GoToNextLevel()
+        {
+            var levels = _levelDatabaseSO.levels;
+            var currentLevel = _gameManager.CurrentLevelSO;
+
+            var currentIndex = Array.IndexOf(levels, currentLevel);
+            var next = levels[currentIndex + 1];
+            _gameManager.SetCurrentLevel(next);
+            SceneManager.LoadScene("Game");
+        }
+
+        private void OnDestroy()
+        {
+            _objectiveSystem.OnStarsEarned -= UpdateStars;
+        }
+        private void UpdateScore()
+        {
+            _scoreFinalText.text = ServiceLocator.Instance.Get<ScoreManager>().GetScore().ToString();
+        }
+
+
+        public void UpdateStars(int starsEarned)
+        {
+            for (int i = 0; i < _stars.Length; i++)
+            {
+                if (i < starsEarned)
+                {
+                    _stars[i].sprite = _fullStar;
+                }
             }
         }
-    }
-    public void ShowEnd()
-    {
-        gameObject.SetActive(true);
+        public void ShowEnd()
+        {
+            gameObject.SetActive(true);
+        }
     }
 }

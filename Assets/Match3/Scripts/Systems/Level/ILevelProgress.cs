@@ -11,6 +11,8 @@ namespace Level
         bool IsLevelUnlocked(string levelId);
         void UnlockLevel(string levelId);
         void Initialize(LevelSO[] levels);
+        void SetStars(string levelID, int stars);
+        int GetStars(string levelID);
     }
     public class LevelProgress : ILevelProgress
     {
@@ -47,6 +49,15 @@ namespace Level
                 _gameData.unlockedLevels.Add(levelId);
                 saveSystem.Save(_gameData);
             }
+        }
+        public void SetStars(string levelID, int stars)
+        {
+            _gameData.levelStars.Add(levelID, stars);
+        }
+
+        public int GetStars(string levelID)
+        {
+            return _gameData.levelStars.TryGetValue(levelID, out var stars) ? stars : 0;
         }
     }
 }

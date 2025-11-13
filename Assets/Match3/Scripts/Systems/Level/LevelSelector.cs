@@ -3,9 +3,11 @@ using ScriptableObjects.Level;
 using System;
 using System.Collections;
 using Systems;
+using UI;
 using UI.Level;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace Level
 {
@@ -14,13 +16,21 @@ namespace Level
         [SerializeField] private LevelDatabaseSO _levelDatabaseSO;
         [SerializeField] private Transform _container;
         [SerializeField] private GameObject _levelButtonPrefab;
+        [SerializeField] private MenuNavigation _menuNavigation;
+        [SerializeField] private Button _btnGoMenu;
         private ILevelProgress _levelProgress;
 
         private void Start()
         {
             _levelProgress = ServiceLocator.Instance.Get<ILevelProgress>();
             _levelProgress.Initialize(_levelDatabaseSO.levels);
+            _btnGoMenu.onClick.AddListener(GoToMainMenu);
             GenerateLevelButton();
+        }
+
+        private void GoToMainMenu()
+        {
+            _menuNavigation.ShowMainMenu();
         }
 
         private void GenerateLevelButton()

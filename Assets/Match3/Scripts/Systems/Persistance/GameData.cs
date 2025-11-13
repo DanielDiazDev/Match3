@@ -10,6 +10,8 @@ namespace Persistance
     {
         public bool initialized;
         public List<string> unlockedLevels = new();
+        public SerializableDictionary<string, int> levelStars = new();
+
     }
     public interface ISaveSystem
     {
@@ -35,6 +37,7 @@ namespace Persistance
                 Debug.LogError($"[SaveSystem] Error saving file: {e}");
             }
         }
+
         public GameData Load()
         {
             if (!File.Exists(_savePath))
@@ -44,6 +47,7 @@ namespace Persistance
 #endif
                 return new GameData();
             }
+
             try
             {
                 var json = File.ReadAllText(_savePath);
@@ -55,6 +59,7 @@ namespace Persistance
                 return new GameData();
             }
         }
+
         public void Delete()
         {
             if (File.Exists(_savePath))

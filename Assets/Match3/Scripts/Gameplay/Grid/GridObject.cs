@@ -14,6 +14,7 @@ namespace Core
             this.x = x;
             this.y = y;
         }
+        public bool IsBlockedForGemSpawn => HasObstacle() && GetValue() == null;
 
         public void SetValue(T gem)
         {

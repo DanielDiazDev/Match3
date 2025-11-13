@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f6b2b462a46cba4b9148392ee169a6b, type: 3}
   m_Name: ObjectiveRemoveObstaclesSO
   m_EditorClassIdentifier: 
+  _icon: {fileID: 21300000, guid: 853f6ca3e45559f40a8b8378d80dd792, type: 3}
   _description: Remover obstacle
   requiredCount: 1

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3ba711200e28d64d84d6c1359eb4261, type: 3}
   m_Name: ObjectiveRemoveGemSO
   m_EditorClassIdentifier: 
+  _icon: {fileID: 21300000, guid: a292bddf8693e00428dace4a7f770aa6, type: 3}
   _description: Remove gem
-  targetGem: {fileID: 11400000, guid: 6f49dea41c1076c44b06a035a4b27945, type: 2}
-  requiredAmount: 1
+  targetGem: {fileID: 11400000, guid: 83c9a376872559a43a157408cbe95466, type: 2}
+  requiredAmount: 5
