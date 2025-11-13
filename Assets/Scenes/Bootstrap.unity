@@ -152,6 +152,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gameManagerPrefab: {fileID: 901275871487759942, guid: 075489498d0b68242aa92f5f3ad2e598, type: 3}
+  _soundManagerPrefab: {fileID: 6736279941045007451, guid: 2eb9eeb614c2fdd478c72107a451129a, type: 3}
 --- !u!4 &239426075
 Transform:
   m_ObjectHideFlags: 0

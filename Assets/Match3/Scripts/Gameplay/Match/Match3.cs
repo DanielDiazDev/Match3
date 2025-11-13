@@ -4,12 +4,9 @@ using Input;
 using Level;
 using ScriptableObjects;
 using ScriptableObjects.Level;
-using System.Collections.Generic;
-using System.Linq;
 using Systems;
 using Systems.Score;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace Core
 {
@@ -95,7 +92,6 @@ namespace Core
             _gravityManager = new(_gridSystem, _levelSO.width, _levelSO.height);
             _gemFiller = new(_gridSystem, _levelSO.width, _levelSO.height, _gemSpawner);
             
-            // Inicializar obstáculos primero
             for (var x = 0; x < _levelSO.width; x++)
             {
                 for (var y = 0; y < _levelSO.height; y++)
@@ -112,7 +108,6 @@ namespace Core
                 }
             }
             
-            // Inicializar gemas
             for (var x = 0; x < _levelSO.width; x++)
             {
                 for (var y = 0; y < _levelSO.height; y++)
@@ -154,7 +149,6 @@ namespace Core
                 await _gemFiller.FillEmptySpots(_gems);
             }
             var matches = _matchFinder.FindMatches();
-            // TODO: Calculate score
             if (matches.Count == 0)
             {
                 await _swapHandler.SwapGems(gridPosA, gridPosB);
@@ -194,7 +188,6 @@ namespace Core
                 _objectiveSystem.SetLevelComplete();
             }
             _inputReader.InputEnabled = true;
-            // TODO: Check if game is over
         }
         private bool IsEmptyPosition(Vector2Int gridPosition) => _gridSystem.GetValue(gridPosition.x, gridPosition.y) == null;
         private bool IsValidPosition(Vector2Int gridPosition) => gridPosition.x >= 0 && gridPosition.x < _levelSO.width && gridPosition.y >= 0 && gridPosition.y < _levelSO.height;

@@ -3,6 +3,7 @@ using ScriptableObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Sound;
 using UnityEngine;
 
 
@@ -56,6 +57,7 @@ namespace Systems
 
         public List<MatchData> FindMatches()
         {
+            ServiceLocator.Instance.Get<SoundManager>().PlaySFX(SoundId.Match);
             var allMatches = new List<MatchData>();
             foreach(var detector in  _detectors)
             {

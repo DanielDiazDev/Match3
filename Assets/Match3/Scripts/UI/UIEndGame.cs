@@ -4,6 +4,7 @@ using ScriptableObjects.Level;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Sound;
 using Systems;
 using Systems.Score;
 using TMPro;
@@ -32,6 +33,8 @@ namespace UI
         }
         private void Start()
         {
+            ServiceLocator.Instance.Get<SoundManager>().PlayMusic(SoundId.BackgroundMusic_3);
+
             UpdateScore();
             
             _btnNextLevel.onClick.AddListener(GoToNextLevel);

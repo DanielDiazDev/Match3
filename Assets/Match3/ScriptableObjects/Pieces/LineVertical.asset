@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 778fa19115fb1a944ba3af9327434932, type: 3}
   m_Name: LineVertical
   m_EditorClassIdentifier: 
-  <Icon>k__BackingField: {fileID: 21300000, guid: 80470d52b250cf34f83808dd6803e5d7, type: 3}
+  <Icon>k__BackingField: {fileID: 21300000, guid: 42c9d9af09cd7284ea64ca723a3050e0, type: 3}
   <Prefab>k__BackingField: {fileID: 5950124371606153668, guid: a77454be7f29e9342b9fcc8951da3851, type: 3}
   <IsPowerUp>k__BackingField: 1

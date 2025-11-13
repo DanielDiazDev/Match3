@@ -2,6 +2,7 @@
 using Cysharp.Threading.Tasks;
 using PrimeTween;
 using System;
+using System.Sound;
 using UnityEngine;
 
 
@@ -19,6 +20,8 @@ namespace Systems
         //Clase swap
         public async UniTask SwapGems(Vector2Int gridPosA, Vector2Int gridPosB)
         {
+            ServiceLocator.Instance.Get<SoundManager>().PlaySFX(SoundId.Swap);
+
             var gridObjectA = _gridSystem.GetValue(gridPosA.x, gridPosA.y); // Ver si hacer lo de velocidad aumaneta si no hay match y volvemos a su pocion original
             var gridObjectB = _gridSystem.GetValue(gridPosB.x, gridPosB.y);
             _= Tween.LocalPosition(gridObjectA.GetValue().Transform, _gridSystem.GetWorldPositionCenter(gridPosB.x, gridPosB.y), 0.5f, Ease.InQuad); //Moverlo a clase gem
