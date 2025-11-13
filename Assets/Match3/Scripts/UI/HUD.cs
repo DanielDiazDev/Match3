@@ -15,7 +15,9 @@ namespace UI
         [SerializeField] private TextMeshProUGUI _moveLeftText;
         private GameManager _gameManager;
         [SerializeField] private ScoreManager _scoreManager;
-        [SerializeField] private Image[] _icons;
+       // [SerializeField] private Image[] _icons;
+        [SerializeField] private ObjectiveIconUI[] _icons;
+        [SerializeField] private TooltipUI _tooltip;
         private void OnEnable()
         {
             _gameManager = ServiceLocator.Instance.Get<GameManager>();
@@ -43,11 +45,16 @@ namespace UI
         {
             _currentScoreText.text = score.ToString();
         } 
+        public void Hide()
+        {
+            gameObject.SetActive(false);
+        }
         private void DisplayObjectives()
         {
+            var objectives = _gameManager.CurrentLevelSO.objetives;
             for (int i = 0; i < _gameManager.CurrentLevelSO.objetives.Count; i++)
             {
-                _icons[i].sprite = _gameManager.CurrentLevelSO.objetives[i].Icon;
+                _icons[i].Initialize(objectives[i], _tooltip);
             }
         }
     }

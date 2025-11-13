@@ -17,7 +17,6 @@ namespace Level
             foreach (var obj in _objectives)
                 obj.Initialize(_context);
         }
-
         public void AddScore(int score) => _context.CurrentScore += score;
         public void GemDestroyed(string gemName)
         {

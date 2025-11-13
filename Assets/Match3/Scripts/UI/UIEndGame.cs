@@ -42,12 +42,18 @@ namespace UI
             var currentLevel = _gameManager.CurrentLevelSO;
             if (_objectiveSystem.IsLevelComplete())
             {
+                var levelProgress = ServiceLocator.Instance.Get<ILevelProgress>();
                 _resultText.text = "Victory";
-                ServiceLocator.Instance.Get<ILevelProgress>().SetStars(currentLevel.levelID.ToString(), _objectiveSystem.GetStarCount());
+                if(levelProgress.GetStars(currentLevel.levelID.ToString()) <= _objectiveSystem.GetStarCount())
+                {
+                    levelProgress.SetStars(currentLevel.levelID.ToString(), _objectiveSystem.GetStarCount());
+
+                }
             }
             else
             {
                 _resultText.text = "Failure";
+                _btnNextLevel.gameObject.SetActive(false);
             }
             var currentIndex = Array.IndexOf(levels, currentLevel);
             _btnNextLevel.interactable = currentIndex >= 0 && currentIndex < levels.Length - 1;
@@ -55,6 +61,9 @@ namespace UI
 
         private void ResetLevel()
         {
+            var levels = _levelDatabaseSO.levels;
+            var currentLevel = _gameManager.CurrentLevelSO;
+            _gameManager.SetCurrentLevel(currentLevel);
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
 
@@ -67,10 +76,10 @@ namespace UI
         {
             var levels = _levelDatabaseSO.levels;
             var currentLevel = _gameManager.CurrentLevelSO;
-
             var currentIndex = Array.IndexOf(levels, currentLevel);
             var next = levels[currentIndex + 1];
             _gameManager.SetCurrentLevel(next);
+            ServiceLocator.Instance.Get<ILevelProgress>().UnlockLevel(next.levelID.ToString());
             SceneManager.LoadScene("Game");
         }
 

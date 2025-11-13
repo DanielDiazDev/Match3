@@ -25,6 +25,7 @@ namespace Core
         [SerializeField] private ExplodeSystem _explodeSystem;
         [SerializeField] private UIEndGame _uiEndGame;
         [SerializeField] private ScoreManager _scoreManager;
+        [SerializeField] private HUD _hud;
         private GridSystem<GridObject<IGem>> _gridSystem;
         private GemFactory _gemFactory;
         private GemSpawner _gemSpawner;
@@ -188,6 +189,7 @@ namespace Core
             
             if (_objectiveSystem.AllObjectivesIsCompleted() || ServiceLocator.Instance.Get<GameManager>().LimitFinish())
             {
+                _hud.Hide();
                 _uiEndGame.ShowEnd();
                 _objectiveSystem.SetLevelComplete();
             }

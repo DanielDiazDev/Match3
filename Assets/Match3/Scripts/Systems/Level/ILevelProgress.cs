@@ -52,7 +52,10 @@ namespace Level
         }
         public void SetStars(string levelID, int stars)
         {
+            var saveSystem = ServiceLocator.Instance.Get<ISaveSystem>();
+            _gameData ??= saveSystem.Load();
             _gameData.levelStars.Add(levelID, stars);
+            saveSystem.Save(_gameData);
         }
 
         public int GetStars(string levelID)

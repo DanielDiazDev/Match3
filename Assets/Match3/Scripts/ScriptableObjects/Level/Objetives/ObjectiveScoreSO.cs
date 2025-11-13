@@ -1,21 +1,25 @@
-﻿using Level;
-using UnityEngine;
+﻿using UnityEngine;
+using Level;
 
 namespace ScriptableObjects.Level.Objetives
 {
-    [CreateAssetMenu(fileName = "ObjectiveScoreSO", menuName = "Level/Objetive/ObjectiveScoreSO")]
+    [CreateAssetMenu(fileName = "ObjectiveScoreSO", menuName = "Level/Objective/Score")]
     public class ObjectiveScoreSO : ObjectiveBaseSO
     {
-        [SerializeField] private int targetScore;
-
         public override void Initialize(ObjectiveContext context)
         {
             context.CurrentScore = 0;
         }
 
-        public override bool IsCompleted(ObjectiveContext context)
+        public override int GetCurrentValue(ObjectiveContext context)
         {
-            return context.CurrentScore >= targetScore;
+            return context.CurrentScore;
+        }
+        public override string GetResolvedDescription(ObjectiveContext context)
+        {
+            string desc = base.GetResolvedDescription(context);
+            desc = desc.Replace("{remaining}", context.CurrentScore.ToString()); 
+            return desc;
         }
     }
 }
