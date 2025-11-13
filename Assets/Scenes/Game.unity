@@ -1478,6 +1478,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 83c9a376872559a43a157408cbe95466, type: 2}
   - {fileID: 11400000, guid: 373936a03ef997e4e85dd25c823b72dd, type: 2}
   - {fileID: 11400000, guid: 9ced88c0d26f76e4d9ea88512133ff50, type: 2}
+  - {fileID: 11400000, guid: 21158e249caea9f47a92cf7b9b4a68c6, type: 2}
+  - {fileID: 11400000, guid: 1c8464db2eb2f5c44a4c8339adc34350, type: 2}
+  - {fileID: 11400000, guid: 0c999ee35813d3b4b858ca8c51bb8607, type: 2}
   _inputReader: {fileID: 1351817221}
   _powerUpSystem: {fileID: 2038279001}
   _explodeSystem: {fileID: 33094568}

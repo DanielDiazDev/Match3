@@ -31,7 +31,7 @@ MonoBehaviour:
     - Key: {x: 1, y: 0}
       Value: {fileID: 11400000, guid: 6f49dea41c1076c44b06a035a4b27945, type: 2}
     - Key: {x: 2, y: 0}
-      Value: {fileID: 11400000, guid: 6f49dea41c1076c44b06a035a4b27945, type: 2}
+      Value: {fileID: 11400000, guid: 373936a03ef997e4e85dd25c823b72dd, type: 2}
     - Key: {x: 3, y: 0}
       Value: {fileID: 11400000, guid: 6f49dea41c1076c44b06a035a4b27945, type: 2}
     - Key: {x: 4, y: 0}
@@ -52,5 +52,3 @@ MonoBehaviour:
       Value: {fileID: 11400000, guid: 1f6d163dda5639540a78c71612887427, type: 2}
     - Key: {x: 5, y: 0}
       Value: {fileID: 11400000, guid: 1f6d163dda5639540a78c71612887427, type: 2}
-  themeMusic: {fileID: 0}
-  backgroundSprite: {fileID: 0}
