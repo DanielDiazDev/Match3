@@ -260,10 +260,79 @@ namespace Editor
 
             EditorGUILayout.Space(10);
 
-            // Mostrar propiedades restantes
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("scores"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("objetivesGems"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("objetives"));
+            // Mostrar propiedades restantes (solo si existen)
+            SerializedProperty scoresProp = serializedObject.FindProperty("scores");
+            if (scoresProp != null)
+            {
+                EditorGUILayout.PropertyField(scoresProp);
+            }
+            
+            SerializedProperty objetivesGemsProp = serializedObject.FindProperty("objetivesGems");
+            if (objetivesGemsProp != null)
+            {
+                EditorGUILayout.PropertyField(objetivesGemsProp);
+            }
+            
+            // Sección personalizada para editar objetivos
+            EditorGUILayout.Space(10);
+            EditorGUILayout.BeginVertical("box");
+            EditorGUILayout.LabelField("Objectives", EditorStyles.boldLabel);
+            
+            SerializedProperty objectivesProperty = serializedObject.FindProperty("objetives");
+            if (objectivesProperty != null)
+            {
+                EditorGUILayout.PropertyField(objectivesProperty, new GUIContent("Objectives List"), true);
+                
+                EditorGUILayout.Space(5);
+                EditorGUILayout.LabelField("Edit Objective Values", EditorStyles.boldLabel);
+                
+                if (_levelSO.objetives != null && _levelSO.objetives.Count > 0)
+                {
+                    for (int i = 0; i < _levelSO.objetives.Count; i++)
+                    {
+                        var objective = _levelSO.objetives[i];
+                        if (objective == null) continue;
+                        
+                        EditorGUILayout.BeginVertical("box");
+                        
+                        // Obtener el SerializedObject del objetivo
+                        SerializedObject objectiveSO = new SerializedObject(objective);
+                        objectiveSO.Update();
+                        
+                        // Mostrar nombre del objetivo
+                        EditorGUILayout.LabelField($"Objective {i + 1}: {objective.GetType().Name}", EditorStyles.boldLabel);
+                        
+                        // Editar _targetValue
+                        SerializedProperty targetValueProp = objectiveSO.FindProperty("_targetValue");
+                        if (targetValueProp != null)
+                        {
+                            EditorGUILayout.PropertyField(targetValueProp, new GUIContent("Target Value"));
+                        }
+                        
+                        // Si es ObjectiveRemoveGemSO, también mostrar targetGem
+                        if (objective is ScriptableObjects.Level.Objetives.ObjectiveRemoveGemSO)
+                        {
+                            SerializedProperty targetGemProp = objectiveSO.FindProperty("targetGem");
+                            if (targetGemProp != null)
+                            {
+                                EditorGUILayout.PropertyField(targetGemProp, new GUIContent("Target Gem"));
+                            }
+                        }
+                        
+                        // Aplicar cambios al objetivo
+                        objectiveSO.ApplyModifiedProperties();
+                        
+                        EditorGUILayout.EndVertical();
+                        EditorGUILayout.Space(3);
+                    }
+                }
+                else
+                {
+                    EditorGUILayout.HelpBox("No objectives assigned. Add objectives to the list above.", MessageType.Info);
+                }
+            }
+            
+            EditorGUILayout.EndVertical();
 
             serializedObject.ApplyModifiedProperties();
         }

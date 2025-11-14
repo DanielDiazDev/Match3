@@ -13,31 +13,87 @@ MonoBehaviour:
   m_Name: Level-1
   m_EditorClassIdentifier: 
   levelID: 1
-  scores:
-    _serializedList: []
-  objetivesGems:
-    _serializedList: []
   objetives:
   - {fileID: 11400000, guid: d56f6331222e3804a8ddfd69746cf023, type: 2}
   - {fileID: 11400000, guid: a11495dfaebdeb741bae5c0b0e8c6b7e, type: 2}
   - {fileID: 11400000, guid: 35d5c70e10be0d5498046fa532880321, type: 2}
   moveLimit: 4
   width: 6
-  height: 1
+  height: 6
   initialGems:
     _serializedList:
     - Key: {x: 0, y: 0}
       Value: {fileID: 11400000, guid: 6f49dea41c1076c44b06a035a4b27945, type: 2}
     - Key: {x: 1, y: 0}
-      Value: {fileID: 11400000, guid: 6f49dea41c1076c44b06a035a4b27945, type: 2}
+      Value: {fileID: 11400000, guid: 83c9a376872559a43a157408cbe95466, type: 2}
     - Key: {x: 2, y: 0}
       Value: {fileID: 11400000, guid: 373936a03ef997e4e85dd25c823b72dd, type: 2}
     - Key: {x: 3, y: 0}
-      Value: {fileID: 11400000, guid: 6f49dea41c1076c44b06a035a4b27945, type: 2}
-    - Key: {x: 4, y: 0}
       Value: {fileID: 11400000, guid: 83c9a376872559a43a157408cbe95466, type: 2}
+    - Key: {x: 4, y: 0}
+      Value: {fileID: 11400000, guid: 6f49dea41c1076c44b06a035a4b27945, type: 2}
     - Key: {x: 5, y: 0}
       Value: {fileID: 11400000, guid: 83c9a376872559a43a157408cbe95466, type: 2}
+    - Key: {x: 0, y: 1}
+      Value: {fileID: 11400000, guid: 9ced88c0d26f76e4d9ea88512133ff50, type: 2}
+    - Key: {x: 1, y: 1}
+      Value: {fileID: 11400000, guid: 1c8464db2eb2f5c44a4c8339adc34350, type: 2}
+    - Key: {x: 2, y: 1}
+      Value: {fileID: 11400000, guid: 21158e249caea9f47a92cf7b9b4a68c6, type: 2}
+    - Key: {x: 3, y: 1}
+      Value: {fileID: 11400000, guid: 6f49dea41c1076c44b06a035a4b27945, type: 2}
+    - Key: {x: 4, y: 1}
+      Value: {fileID: 11400000, guid: 373936a03ef997e4e85dd25c823b72dd, type: 2}
+    - Key: {x: 5, y: 1}
+      Value: {fileID: 11400000, guid: 1c8464db2eb2f5c44a4c8339adc34350, type: 2}
+    - Key: {x: 0, y: 2}
+      Value: {fileID: 11400000, guid: 373936a03ef997e4e85dd25c823b72dd, type: 2}
+    - Key: {x: 1, y: 2}
+      Value: {fileID: 11400000, guid: 6f49dea41c1076c44b06a035a4b27945, type: 2}
+    - Key: {x: 2, y: 2}
+      Value: {fileID: 11400000, guid: 83c9a376872559a43a157408cbe95466, type: 2}
+    - Key: {x: 3, y: 2}
+      Value: {fileID: 11400000, guid: 83c9a376872559a43a157408cbe95466, type: 2}
+    - Key: {x: 4, y: 2}
+      Value: {fileID: 11400000, guid: 1c8464db2eb2f5c44a4c8339adc34350, type: 2}
+    - Key: {x: 5, y: 2}
+      Value: {fileID: 11400000, guid: 1c8464db2eb2f5c44a4c8339adc34350, type: 2}
+    - Key: {x: 0, y: 3}
+      Value: {fileID: 11400000, guid: 83c9a376872559a43a157408cbe95466, type: 2}
+    - Key: {x: 2, y: 3}
+      Value: {fileID: 11400000, guid: 373936a03ef997e4e85dd25c823b72dd, type: 2}
+    - Key: {x: 3, y: 3}
+      Value: {fileID: 11400000, guid: 6f49dea41c1076c44b06a035a4b27945, type: 2}
+    - Key: {x: 4, y: 3}
+      Value: {fileID: 11400000, guid: 21158e249caea9f47a92cf7b9b4a68c6, type: 2}
+    - Key: {x: 5, y: 3}
+      Value: {fileID: 11400000, guid: 0c999ee35813d3b4b858ca8c51bb8607, type: 2}
+    - Key: {x: 0, y: 4}
+      Value: {fileID: 11400000, guid: 9ced88c0d26f76e4d9ea88512133ff50, type: 2}
+    - Key: {x: 1, y: 4}
+      Value: {fileID: 11400000, guid: 0c999ee35813d3b4b858ca8c51bb8607, type: 2}
+    - Key: {x: 2, y: 4}
+      Value: {fileID: 11400000, guid: 6f49dea41c1076c44b06a035a4b27945, type: 2}
+    - Key: {x: 3, y: 4}
+      Value: {fileID: 11400000, guid: 373936a03ef997e4e85dd25c823b72dd, type: 2}
+    - Key: {x: 4, y: 4}
+      Value: {fileID: 11400000, guid: 83c9a376872559a43a157408cbe95466, type: 2}
+    - Key: {x: 5, y: 4}
+      Value: {fileID: 11400000, guid: 373936a03ef997e4e85dd25c823b72dd, type: 2}
+    - Key: {x: 0, y: 5}
+      Value: {fileID: 11400000, guid: 0c999ee35813d3b4b858ca8c51bb8607, type: 2}
+    - Key: {x: 1, y: 5}
+      Value: {fileID: 11400000, guid: 0c999ee35813d3b4b858ca8c51bb8607, type: 2}
+    - Key: {x: 2, y: 5}
+      Value: {fileID: 11400000, guid: 0c999ee35813d3b4b858ca8c51bb8607, type: 2}
+    - Key: {x: 3, y: 5}
+      Value: {fileID: 11400000, guid: 9ced88c0d26f76e4d9ea88512133ff50, type: 2}
+    - Key: {x: 4, y: 5}
+      Value: {fileID: 11400000, guid: 0c999ee35813d3b4b858ca8c51bb8607, type: 2}
+    - Key: {x: 5, y: 5}
+      Value: {fileID: 11400000, guid: 21158e249caea9f47a92cf7b9b4a68c6, type: 2}
+    - Key: {x: 1, y: 3}
+      Value: {fileID: 11400000, guid: 9ced88c0d26f76e4d9ea88512133ff50, type: 2}
   initialObstacles:
     _serializedList:
     - Key: {x: 0, y: 0}
@@ -51,4 +107,12 @@ MonoBehaviour:
     - Key: {x: 4, y: 0}
       Value: {fileID: 11400000, guid: 1f6d163dda5639540a78c71612887427, type: 2}
     - Key: {x: 5, y: 0}
+      Value: {fileID: 11400000, guid: 1f6d163dda5639540a78c71612887427, type: 2}
+    - Key: {x: 0, y: 2}
+      Value: {fileID: 11400000, guid: 1f6d163dda5639540a78c71612887427, type: 2}
+    - Key: {x: 3, y: 3}
+      Value: {fileID: 11400000, guid: 1f6d163dda5639540a78c71612887427, type: 2}
+    - Key: {x: 1, y: 4}
+      Value: {fileID: 11400000, guid: 1f6d163dda5639540a78c71612887427, type: 2}
+    - Key: {x: 2, y: 4}
       Value: {fileID: 11400000, guid: 1f6d163dda5639540a78c71612887427, type: 2}

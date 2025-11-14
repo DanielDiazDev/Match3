@@ -10,8 +10,6 @@ namespace ScriptableObjects.Level
     public class LevelSO : ScriptableObject
     {
         public int levelID;
-        public SerializedDictionary<int, int> scores;
-        public SerializedDictionary<GemSO, int> objetivesGems;
         public List<ObjectiveBaseSO> objetives;
         public int moveLimit;
         public int width;
